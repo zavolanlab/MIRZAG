@@ -42,12 +42,12 @@ jobber = JobClient.Jobber()
 #Create a group for whole pipeline. The module "Python" will be inherited by all jobs that are in this group,
 # so we don't need to define it for each job that calls a python script
 pipelineId = jobber.startGroup({
-    'name': "Pipeline",
+    'name': "MIRZA-G",
     'options': [
-        ['module', "Python"],
-        ['module', "GCC"],
-        ['module', "CONTRAfold"],
-    ]
+                ['module', "Python"],
+                ['module', "GCC"],
+                ['module', "CONTRAfold"]],
+    'executer': settings['general'].get('executer', 'drmaa')
 })
 
 #First step is to split the file
