@@ -99,9 +99,13 @@ for f in glob.glob(options.input_dir + "/*.fa"):
                                        'output': input_name + ".seedcount",
                                        'how': seed_count_settings.get('how', 'TargetScan'),
                                        'context': seed_count_settings.get('context', 50)})
-    seed_count_id = jobber.job(seed_count_command, {
-        'name': 'SeedCount',
-        'uniqueId': True})
+    seed_count_id = jobber.job(seed_count_command,
+                               {'name': 'SeedCount',
+                                'uniqueId': True,
+                                'options': [('q', seed_count_settings.get('queue', 'short.q')),
+                                            ('l', "h_vmem=%s" % seed_count_settings.get('mem_req', '2G'))]
+                                })
+
 
     #
     # Filter duplicates if necessary
@@ -143,10 +147,12 @@ for f in glob.glob(options.input_dir + "/*.fa"):
                                                         'split_by': filter_duplicates_settings.get('split_by', "NONE"),
                                                        'index_after_split': filter_duplicates_settings.get('index_after_split', 0)
                                                        })
-    filter_duplicates_id = jobber.job(filter_command, {
-                                      'name': 'FilterDuplicates',
-                                      'dependencies': [seed_count_id],
-                                      'uniqueId': True})
+    filter_duplicates_id = jobber.job(filter_command,
+                                      {'name': 'FilterDuplicates',
+                                       'dependencies': [seed_count_id],
+                                       'options': [('q', filter_duplicates_settings.get('queue', 'short.q')),
+                                                   ('l', "h_vmem=%s" % filter_duplicates_settings.get('mem_req', '2G'))],
+                                        'uniqueId': True})
     #
     # Create group for each file in order to calculate features
     #
@@ -217,6 +223,8 @@ for f in glob.glob(options.input_dir + "/*.fa"):
     calculate_mirza_id = jobber.job(calculate_mirza_command, {
                                       'name': 'CalculateMIRZA',
                                       'dependencies': [filter_duplicates_id],
+                                       'options': [('q', mirza_settings.get('queue', 'short.q')),
+                                                   ('l', "h_vmem=%s" % mirza_settings.get('mem_req', '2G'))],
                                       'uniqueId': True})
     #
     # Contrafold
@@ -270,6 +278,8 @@ for f in glob.glob(options.input_dir + "/*.fa"):
     calculate_contrafold_id = jobber.job(contrafold_command, {
                                       'name': 'CalculateCONTRAfold',
                                       'dependencies': [filter_duplicates_id],
+                                       'options': [('q', contrafold_settings.get('queue', 'short.q')),
+                                                   ('l', "h_vmem=%s" % contrafold_settings.get('mem_req', '2G'))],
                                       'uniqueId': True})
     #
     # Flanks
@@ -314,6 +324,8 @@ for f in glob.glob(options.input_dir + "/*.fa"):
     calculate_flanks_id = jobber.job(flanks_command, {
                                       'name': 'CalculateFlanks',
                                       'dependencies': [filter_duplicates_id],
+                                       'options': [('q', calculate_flanks_settings.get('queue', 'short.q')),
+                                                   ('l', "h_vmem=%s" % calculate_flanks_settings.get('mem_req', '2G'))],
                                       'uniqueId': True})
 
     #
@@ -356,6 +368,8 @@ for f in glob.glob(options.input_dir + "/*.fa"):
     calculate_distance_id = jobber.job(distance_command, {
                                       'name': 'CalculateDistance',
                                       'dependencies': [filter_duplicates_id],
+                                       'options': [('q', calculate_distance_settings.get('queue', 'short.q')),
+                                                   ('l', "h_vmem=%s" % calculate_distance_settings.get('mem_req', '2G'))],
                                       'uniqueId': True})
     jobber.endGroup()
     #
@@ -414,6 +428,8 @@ for f in glob.glob(options.input_dir + "/*.fa"):
     merge_id = jobber.job(merge_command, {
                                       'name': 'MergeAndAddProbability',
                                       'dependencies': [features_group_id],
+                                       'options': [('q', merge_settings.get('queue', 'short.q')),
+                                                   ('l', "h_vmem=%s" % merge_settings.get('mem_req', '2G'))],
                                       'uniqueId': True})
 
     #
@@ -461,6 +477,8 @@ for f in glob.glob(options.input_dir + "/*.fa"):
     merge_id = jobber.job(score_command, {
                                       'name': 'CalculateScore',
                                       'dependencies': [merge_id],
+                                       'options': [('q', score_settings.get('queue', 'short.q')),
+                                                   ('l', "h_vmem=%s" % score_settings.get('mem_req', '2G'))],
                                       'uniqueId': True})
 
 jobber.endGroup()
