@@ -45,6 +45,24 @@ parser.add_argument("--only-mirza",
                     choices=('yes', 'no'),
                     dest="only_mirza",
                     help="Calculate only MIRZA and DON'T calculate MIRZA BLS")
+parser.add_argument("--threshold",
+                    dest="threshold",
+                    type=float,
+                    default=0.12,
+                    help="Threshold for summing, defaults to 0.12")
+parser.add_argument("--split-by",
+                    dest="split_by",
+                    default="NONE",
+                    help="If the header of fasta has multiple annotations eg. transcript_id|entrez_id|wikiname\nsplit it and take only one, defaults to NONE")
+parser.add_argument("--column",
+                    dest="column",
+                    type=int,
+                    default=0,
+                    help="0 based column number to take after splitting, defaults to 0")
+parser.add_argument("--name",
+                    dest="name",
+                    default="GeneID",
+                    help="Name of the id eg. gene, transcript etc , defaults to GeneID")
 
 try:
     options = parser.parse_args()
@@ -216,11 +234,41 @@ def main():
     #
     data.columns = [columns_map[col] for col in data.columns]
 
+
+    data_with_conserved = {}
+    data_without_conserved = {}
     if options.verbose:
-        syserr("Saving file\n")
-    import ipdb; ipdb.set_trace()
-    with gzip.open(options.output, 'wb') as handler:
-        data.to_csv(handler, sep='\t', index=None, na_rep="NaN", header=None)
+        syserr("Calculating per gene score\n")
+    for index, row in data.iterrows():
+        key = "%s,%s" % (row["ID"].split(options.split_by)[options.column], row["miRNA"])
+        if not pd.isnull(row["Probability without conservation"]):
+            if float(row["Probability without conservation"]) >= options.threshold:
+                if key not in data_without_conserved:
+                    data_without_conserved[key] = 0.0
+                data_without_conserved[key] += float(row["Probability without conservation"])
+        if not pd.isnull(row["Probability with conservation"]):
+            if float(row["Probability with conservation"]) >= options.threshold:
+                if key not in data_with_conserved:
+                    data_with_conserved[key] = 0.0
+                data_with_conserved[key] += float(row["Probability with conservation"])
+    if options.verbose:
+        syserr("Writing output\n")
+    with gzip.open(options.output, 'wb') as o:
+        # o.write("%s\t%s\t%s\t%s\n" % (options.name, 'miRNA', 'Total score without conservation', 'Total score with conservation'))
+        for key, value in data_without_conserved.iteritems():
+            myid, mirna = key.split(",")
+            try:
+                with_conservation_value = str(data_with_conserved[key])
+            except KeyError:
+                with_conservation_value = 'NaN'
+            o.write("%s\t%s\t%f\t%s\n" % (myid, mirna, value, with_conservation_value))
+
+
+    # if options.verbose:
+    #     syserr("Saving file\n")
+    # import ipdb; ipdb.set_trace()
+    # with gzip.open(options.output, 'wb') as handler:
+    #     data.to_csv(handler, sep='\t', index=None, na_rep="NaN", header=None)
 
 
 def scaled_logit_inverse(probability, scaling_factor=0.24):

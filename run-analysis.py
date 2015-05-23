@@ -59,14 +59,15 @@ for f in glob.glob(options.input_dir + "/*.fa"):
     # Calculate seed matches
     #
     seed_count_settings = settings['tasks']['CalculateSeedMatches']
-    seed_count_script = 'scripts/rg-count-miRNA-seeds.py'
+    seed_count_script = 'scripts/rg-count-miRNA-seeds-and-filter-duplicates.py'
     seed_count_command = """python {script} \\
                                 --motifs {input} \\
                                 --seqs {seqs} \\
                                 --output {output} \\
                                 --how {how} \\
                                 --context {context} \\
-                                --coords \\
+                                --split-by "{split_by}" \\
+                                --index-after-split {index_after_split} \\
                                 -v
                   """
     #
@@ -91,6 +92,8 @@ for f in glob.glob(options.input_dir + "/*.fa"):
                                        'seqs': 'seqs.fa',
                                        'output': 'output',
                                        'how': seed_count_settings.get('how', 'TargetScan'),
+                                        'split_by': seed_count_settings.get('split_by', "NONE"),
+                                       'index_after_split': seed_count_settings.get('index_after_split', 0),
                                        'context': seed_count_settings.get('context', 50)})
     else:
         seed_count_command = str(seed_count_command).format(**{'script': os.path.join(pip_dir, seed_count_script),
@@ -98,6 +101,8 @@ for f in glob.glob(options.input_dir + "/*.fa"):
                                        'seqs': settings['general']['seqs'],
                                        'output': input_name + ".seedcount",
                                        'how': seed_count_settings.get('how', 'TargetScan'),
+                                        'split_by': seed_count_settings.get('split_by', "NONE"),
+                                       'index_after_split': seed_count_settings.get('index_after_split', 0),
                                        'context': seed_count_settings.get('context', 50)})
     seed_count_id = jobber.job(seed_count_command,
                                {'name': 'SeedCount',
@@ -107,52 +112,6 @@ for f in glob.glob(options.input_dir + "/*.fa"):
                                 })
 
 
-    #
-    # Filter duplicates if necessary
-    #
-    filter_duplicates_settings = settings['tasks']['FilterDuplicates']
-    filter_duplicates_script = 'scripts/rg-filter-duplicates.py'
-    filter_command = """python {script} \\
-                            --coords {input} \\
-                            --output {output} \\
-                            --split-by "{split_by}" \\
-                            --index-after-split {index_after_split} \\
-                      """
-    #
-    # If there is template use it for command
-    #
-    if settings['general'].get('executer', 'drmaa') == 'drmaa':
-        #
-        # Copy files by default to the tmp directory
-        #
-        copy_dir = "$TMPDIR"
-        copy_files = {input_name + ".seedcount": 'input.seedcount'}
-        moveback = {'output': input_name + ".filterduplicates"}
-
-        filter_command_rendered = template.render(modules=filter_duplicates_settings.get('modules', None),
-                                                  command=filter_command,
-                                                  copy=copy_files,
-                                                  moveback=moveback,
-                                                  copydir=copy_dir)
-        filter_command = str(filter_command_rendered).format(**{'script': os.path.join(pip_dir, filter_duplicates_script),
-                                                                'input': 'input.seedcount',
-                                                                'output': 'output',
-                                                                'split_by': filter_duplicates_settings.get('split_by', "NONE"),
-                                                               'index_after_split': filter_duplicates_settings.get('index_after_split', 0)
-                                                               })
-    else:
-        filter_command = str(filter_command).format(**{'script': os.path.join(pip_dir, filter_duplicates_script),
-                                                        'input': input_name + '.seedcount',
-                                                        'output': input_name + ".filterduplicates",
-                                                        'split_by': filter_duplicates_settings.get('split_by', "NONE"),
-                                                       'index_after_split': filter_duplicates_settings.get('index_after_split', 0)
-                                                       })
-    filter_duplicates_id = jobber.job(filter_command,
-                                      {'name': 'FilterDuplicates',
-                                       'dependencies': [seed_count_id],
-                                       'options': [('q', filter_duplicates_settings.get('queue', 'short.q')),
-                                                   ('l', "h_vmem=%s" % filter_duplicates_settings.get('mem_req', '2G'))],
-                                        'uniqueId': True})
     #
     # Create group for each file in order to calculate features
     #
@@ -182,7 +141,7 @@ for f in glob.glob(options.input_dir + "/*.fa"):
         # Copy files by default to the tmp directory
         #
         copy_dir = "$TMPDIR"
-        copy_files = {input_name + ".filterduplicates": 'input.filterduplicates',
+        copy_files = {input_name + ".seedcount": 'input.seedcount',
                       settings['general']['seqs']: 'seqs.fa',
                       settings['general']['motifs']: 'motifs.fa'}
         moveback = {'output': input_name + ".mirza"}
@@ -194,7 +153,7 @@ for f in glob.glob(options.input_dir + "/*.fa"):
                                                            copydir=copy_dir)
         calculate_mirza_command = str(calculate_mirza_command_rendered).format(**{'script': os.path.join(pip_dir, mirza_script),
                             'output': 'output',
-                            'input': "input.filterduplicates",
+                            'input': "input.seedcount",
                             'seqs': 'seqs.fa',
                             'motifs': 'motifs.fa',
                             'context': mirza_settings.get('context_length', 50),
@@ -208,7 +167,7 @@ for f in glob.glob(options.input_dir + "/*.fa"):
     else:
         calculate_mirza_command = str(calculate_mirza_command).format(**{'script': os.path.join(pip_dir, mirza_script),
                             'output': input_name + ".mirza",
-                            'input': input_name + ".filterduplicates",
+                            'input': input_name + ".seedcount",
                             'seqs': settings['general']['seqs'],
                             'motifs': settings['general']['motifs'],
                             'context': mirza_settings.get('context_length', 50),
@@ -222,7 +181,7 @@ for f in glob.glob(options.input_dir + "/*.fa"):
 
     calculate_mirza_id = jobber.job(calculate_mirza_command, {
                                       'name': 'CalculateMIRZA',
-                                      'dependencies': [filter_duplicates_id],
+                                      'dependencies': [seed_count_id],
                                        'options': [('q', mirza_settings.get('queue', 'short.q')),
                                                    ('l', "h_vmem=%s" % mirza_settings.get('mem_req', '2G'))],
                                       'uniqueId': True})
@@ -246,7 +205,7 @@ for f in glob.glob(options.input_dir + "/*.fa"):
         # Copy files by default to the tmp directory
         #
         copy_dir = "$TMPDIR"
-        copy_files = {input_name + ".filterduplicates": 'input.filterduplicates',
+        copy_files = {input_name + ".seedcount": 'input.seedcount',
                       settings['general']['seqs']: 'seqs.fa'}
         moveback = {'output': input_name + ".contrafold"}
 
@@ -257,7 +216,7 @@ for f in glob.glob(options.input_dir + "/*.fa"):
                                                       copydir=copy_dir)
         contrafold_command = str(contrafold_command_rendered).format(**{'script': os.path.join(pip_dir, contrafold_script),
                                 'output': "output",
-                                'input': "input.filterduplicates",
+                                'input': "input.seedcount",
                                 'seqs': 'seqs.fa',
                                 'context': contrafold_settings.get('context', 50),
                                 'contextlen_l': contrafold_settings.get('contextLen_L', 14),
@@ -267,7 +226,7 @@ for f in glob.glob(options.input_dir + "/*.fa"):
     else:
         contrafold_command = str(contrafold_command).format(**{'script': os.path.join(pip_dir, contrafold_script),
                                 'output': input_name + ".contrafold",
-                                'input': input_name + ".filterduplicates",
+                                'input': input_name + ".seedcount",
                                 'seqs': settings['general']['seqs'],
                                 'context': contrafold_settings.get('context', 50),
                                 'contextlen_l': contrafold_settings.get('contextLen_L', 14),
@@ -277,7 +236,7 @@ for f in glob.glob(options.input_dir + "/*.fa"):
 
     calculate_contrafold_id = jobber.job(contrafold_command, {
                                       'name': 'CalculateCONTRAfold',
-                                      'dependencies': [filter_duplicates_id],
+                                      'dependencies': [seed_count_id],
                                        'options': [('q', contrafold_settings.get('queue', 'short.q')),
                                                    ('l', "h_vmem=%s" % contrafold_settings.get('mem_req', '2G'))],
                                       'uniqueId': True})
@@ -298,7 +257,7 @@ for f in glob.glob(options.input_dir + "/*.fa"):
         # Copy files by default to the tmp directory
         #
         copy_dir = "$TMPDIR"
-        copy_files = {input_name + ".filterduplicates": 'input.filterduplicates',
+        copy_files = {input_name + ".seedcount": 'input.seedcount',
                       settings['general']['seqs']: 'seqs.fa'}
         moveback = {'output': input_name + ".flanks"}
 
@@ -310,20 +269,20 @@ for f in glob.glob(options.input_dir + "/*.fa"):
 
         flanks_command = str(flanks_command_rendered).format(**{'script': os.path.join(pip_dir, flanks_script),
                                    'output': "output",
-                                   'input': "input.filterduplicates",
+                                   'input': "input.seedcount",
                                    'seqs': 'seqs.fa',
                                    'context': calculate_flanks_settings.get('context_length', 50),
                                  })
     else:
         flanks_command = str(flanks_command).format(**{'script': os.path.join(pip_dir, flanks_script),
                                    'output': input_name + ".flanks",
-                                   'input': input_name + ".filterduplicates",
+                                   'input': input_name + ".seedcount",
                                    'seqs': settings['general']['seqs'],
                                    'context': calculate_flanks_settings.get('context_length', 50),
                                  })
     calculate_flanks_id = jobber.job(flanks_command, {
                                       'name': 'CalculateFlanks',
-                                      'dependencies': [filter_duplicates_id],
+                                      'dependencies': [seed_count_id],
                                        'options': [('q', calculate_flanks_settings.get('queue', 'short.q')),
                                                    ('l', "h_vmem=%s" % calculate_flanks_settings.get('mem_req', '2G'))],
                                       'uniqueId': True})
@@ -344,7 +303,7 @@ for f in glob.glob(options.input_dir + "/*.fa"):
         # Copy files by default to the tmp directory
         #
         copy_dir = "$TMPDIR"
-        copy_files = {input_name + ".filterduplicates": 'input.filterduplicates',
+        copy_files = {input_name + ".seedcount": 'input.seedcount',
                       settings['general']['seqs']: 'seqs.fa'}
         moveback = {'output': input_name + ".distance"}
 
@@ -356,18 +315,18 @@ for f in glob.glob(options.input_dir + "/*.fa"):
 
         distance_command = str(distance_command_rendered).format(**{'script': os.path.join(pip_dir, distance_script),
                                      'output': "output",
-                                     'input': "input.filterduplicates",
+                                     'input': "input.seedcount",
                                      'seqs': "seqs.fa",
                                     })
     else:
         distance_command = str(distance_command).format(**{'script': os.path.join(pip_dir, distance_script),
                                      'output': input_name + ".distance",
-                                     'input': input_name + ".filterduplicates",
+                                     'input': input_name + ".seedcount",
                                      'seqs': settings['general']['seqs'],
                                     })
     calculate_distance_id = jobber.job(distance_command, {
                                       'name': 'CalculateDistance',
-                                      'dependencies': [filter_duplicates_id],
+                                      'dependencies': [seed_count_id],
                                        'options': [('q', calculate_distance_settings.get('queue', 'short.q')),
                                                    ('l', "h_vmem=%s" % calculate_distance_settings.get('mem_req', '2G'))],
                                       'uniqueId': True})
@@ -375,8 +334,8 @@ for f in glob.glob(options.input_dir + "/*.fa"):
     #
     # Merge and add probabilities
     #
-    merge_script = 'scripts/rg-merge-results-and-add-probability.py'
-    merge_settings = settings['tasks']['MergeAndAddProbability']
+    merge_script = 'scripts/rg-merge-results-add-probability-and-calculate-per-gene-score.py'
+    merge_settings = settings['tasks']['MergeAndCollect']
     merge_inputs_local = ",".join([input_name + ".contrafold",
                              input_name + ".mirza",
                              input_name + ".flanks",
@@ -388,6 +347,9 @@ for f in glob.glob(options.input_dir + "/*.fa"):
                         --model-bls {model_bls} \\
                         --model-nobls {model_nobls} \\
                         --only-mirza {onlymirza} \\
+                        --threshold {threshold} \\
+                        --split-by "{split_by}" \\
+                        --colum {column} \\
                         -v
               """
     if settings['general'].get('executer', 'drmaa') == 'drmaa':
@@ -399,8 +361,8 @@ for f in glob.glob(options.input_dir + "/*.fa"):
                        input_name + ".mirza": "mirza",
                        input_name + ".flanks": "flanks",
                        input_name + ".distance": "distance",
-                       input_name + ".filterduplicates": "input.filterduplicates"}
-        moveback = {'output': input_name + ".probabilities"}
+                       input_name + ".seedcount": "input.seedcount"}
+        moveback = {'output': input_name + ".score"}
 
         merge_command_rendered = template.render(modules=merge_settings.get('modules', None),
                                                  command=merge_command,
@@ -411,74 +373,31 @@ for f in glob.glob(options.input_dir + "/*.fa"):
         merge_command = str(merge_command_rendered).format(**{'script': os.path.join(pip_dir, merge_script),
                                   'output': "output",
                                   'inputs': "contrafold,mirza,flanks,distance",
-                                  'coords': "input.filterduplicates",
+                                  'coords': "input.seedcount",
                                   'model_bls':   settings['general']['model_with_bls'],
                                   'model_nobls': settings['general']['model_without_bls'],
-                                  'onlymirza': merge_settings.get('run_only_MIRZA', 'yes')
+                                  'onlymirza': merge_settings.get('run_only_MIRZA', 'yes'),
+                                  'threshold': merge_settings.get('threshold', 0.12),
+                                  'split_by':  merge_settings.get('split_by', "NOTHING"),
+                                  'column':    merge_settings.get('index_after_split', 0),
                                  })
     else:
         merge_command = str(merge_command).format(**{'script': os.path.join(pip_dir, merge_script),
-                                  'output': input_name + ".probabilities",
+                                  'output': input_name + ".score",
                                   'inputs': merge_inputs_local,
-                                  'coords': input_name + ".filterduplicates",
+                                  'coords': input_name + ".seedcount",
                                   'model_bls':   settings['general']['model_with_bls'],
                                   'model_nobls': settings['general']['model_without_bls'],
-                                  'onlymirza': merge_settings.get('run_only_MIRZA', 'yes')
+                                  'onlymirza': merge_settings.get('run_only_MIRZA', 'yes'),
+                                  'threshold': merge_settings.get('threshold', 0.12),
+                                  'split_by':  merge_settings.get('split_by', "NOTHING"),
+                                  'column':    merge_settings.get('index_after_split', 0),
                                  })
     merge_id = jobber.job(merge_command, {
-                                      'name': 'MergeAndAddProbability',
+                                      'name': 'MergeAndCollect',
                                       'dependencies': [features_group_id],
                                        'options': [('q', merge_settings.get('queue', 'short.q')),
                                                    ('l', "h_vmem=%s" % merge_settings.get('mem_req', '2G'))],
-                                      'uniqueId': True})
-
-    #
-    # Calculate score
-    #
-    score_script = 'scripts/rg-calculate-per-gene-score.py'
-    score_settings = settings['tasks']['CalculateScore']
-    score_command = """python {script} \\
-                    --output {output} \\
-                    --input {input} \\
-                    --threshold {threshold} \\
-                    --split-by "{split_by}" \\
-                    --colum {column} \\
-                    -v
-              """
-    if settings['general'].get('executer', 'drmaa') == 'drmaa':
-        #
-        # Copy files by default to the tmp directory
-        #
-        copy_dir = "$TMPDIR"
-        copy_files = {input_name + ".probabilities": 'input.probabilities'}
-        moveback = {'output': input_name + ".score"}
-
-        score_command_rendered = template.render(modules=score_settings.get('modules', None),
-                                                      command=score_command,
-                                                      copy=copy_files,
-                                                      moveback=moveback,
-                                                      copydir=copy_dir)
-
-        score_command = str(score_command_rendered).format(**{'script': os.path.join(pip_dir, score_script),
-                                  'output': "output",
-                                  'input': "input.probabilities",
-                                  'threshold': score_settings.get('threshold', 0.12),
-                                  'split_by':  score_settings.get('split_by', "NOTHING"),
-                                  'column':    score_settings.get('index_after_split', 0),
-                                  })
-    else:
-        score_command = str(score_command).format(**{'script': os.path.join(pip_dir, score_script),
-                                  'output': input_name + ".score",
-                                  'input': input_name + ".probabilities",
-                                  'threshold': score_settings.get('threshold', 0.12),
-                                  'split_by':  score_settings.get('split_by', "NOTHING"),
-                                  'column':    score_settings.get('index_after_split', 0),
-                                  })
-    merge_id = jobber.job(score_command, {
-                                      'name': 'CalculateScore',
-                                      'dependencies': [merge_id],
-                                       'options': [('q', score_settings.get('queue', 'short.q')),
-                                                   ('l', "h_vmem=%s" % score_settings.get('mem_req', '2G'))],
                                       'uniqueId': True})
 
 jobber.endGroup()
