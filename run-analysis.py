@@ -25,6 +25,10 @@ parser.add_argument("--input-dir",
                     dest="input_dir",
                     required=True,
                     help="Input and output directory")
+parser.add_argument("--working-dir",
+                    dest="working_dir",
+                    required=True,
+                    help="Working directory of the pipeline. Required because this file is launched from ~")
 
 try:
     options = parser.parse_args()
@@ -33,7 +37,7 @@ except Exception, e:
 
 settings = ConfigObj(options.config).dict()
 
-thisDir = os.getcwd()
+thisDir = options.working_dir
 pip_dir = os.path.dirname(os.path.abspath(__file__))
 jobberDir = settings['general']['jobber_path']
 sys.path.append(jobberDir)
@@ -49,9 +53,13 @@ jobber.extendGroup(options.group_id)
 #files in case we need to restart the jobs. We should make the jobs unique to prevent duplication of jobs in case this script
 #is run multiple times
 
-template = settings['general']['template']
+# template = settings['general']['template']
+template = os.path.join(pip_dir, "scripts/template.sh")
 with open(template) as tmpl:
     template = Template(tmpl.read())
+
+files_to_run = {}
+seed_count_group = jobber.startGroup({'name': 'SeedCount'})
 for f in glob.glob(options.input_dir + "/*.fa"):
     input_name = os.path.splitext(f)[0]
 
@@ -110,14 +118,18 @@ for f in glob.glob(options.input_dir + "/*.fa"):
                                 'options': [('q', seed_count_settings.get('queue', 'short.q')),
                                             ('l', "h_vmem=%s" % seed_count_settings.get('mem_req', '2G'))]
                                 })
+    files_to_run[input_name] = seed_count_id
 
+jobber.endGroup()
+features_group_id = jobber.startGroup({'name': "Features_Group"})
 
+#
+# MIRZA
+#
+mirza_group = jobber.startGroup({'name': 'MIRZA'})
+for input_name, seed_count_id in files_to_run.iteritems():
     #
     # Create group for each file in order to calculate features
-    #
-    features_group_id = jobber.startGroup({'name': "Features_Group"})
-    #
-    # MIRZA
     #
     mirza_settings = settings['tasks']['CalculateMIRZA']
     mirza_script = 'scripts/rg-calculate-MIRZA.py'
@@ -185,9 +197,13 @@ for f in glob.glob(options.input_dir + "/*.fa"):
                                        'options': [('q', mirza_settings.get('queue', 'short.q')),
                                                    ('l', "h_vmem=%s" % mirza_settings.get('mem_req', '2G'))],
                                       'uniqueId': True})
-    #
-    # Contrafold
-    #
+
+jobber.endGroup()
+#
+# Contrafold
+#
+contrafold_group = jobber.startGroup({'name': 'CONTRAfold'})
+for input_name, seed_count_id in files_to_run.iteritems():
     contrafold_settings = settings['tasks']['CalculateCONTRAfold']
     contrafold_script = 'scripts/rg-calculate-contrafold.py'
     contrafold_command = """python {script} \\
@@ -240,9 +256,12 @@ for f in glob.glob(options.input_dir + "/*.fa"):
                                        'options': [('q', contrafold_settings.get('queue', 'short.q')),
                                                    ('l', "h_vmem=%s" % contrafold_settings.get('mem_req', '2G'))],
                                       'uniqueId': True})
-    #
-    # Flanks
-    #
+jobber.endGroup()
+#
+# Flanks
+#
+flanks_group = jobber.startGroup({'name': 'Flanks'})
+for input_name, seed_count_id in files_to_run.iteritems():
     calculate_flanks_settings = settings['tasks']['CalculateFlanks']
     flanks_script = 'scripts/rg-calculate-flanks-composition.py'
     flanks_command = """python {script} \\
@@ -287,9 +306,12 @@ for f in glob.glob(options.input_dir + "/*.fa"):
                                                    ('l', "h_vmem=%s" % calculate_flanks_settings.get('mem_req', '2G'))],
                                       'uniqueId': True})
 
-    #
-    # Distance
-    #
+jobber.endGroup()
+#
+# Distance
+#
+distance_group = jobber.startGroup({'name': 'Distance'})
+for input_name, seed_count_id in files_to_run.iteritems():
     calculate_distance_settings = settings['tasks']['CalculateDistance']
     distance_script = 'scripts/rg-calculate-distance.py'
     distance_command = """python {script} \\
@@ -330,10 +352,14 @@ for f in glob.glob(options.input_dir + "/*.fa"):
                                        'options': [('q', calculate_distance_settings.get('queue', 'short.q')),
                                                    ('l', "h_vmem=%s" % calculate_distance_settings.get('mem_req', '2G'))],
                                       'uniqueId': True})
-    jobber.endGroup()
-    #
-    # Merge and add probabilities
-    #
+jobber.endGroup()
+jobber.endGroup()
+#
+# Merge and add probabilities
+#
+add_probability_group = jobber.startGroup({'name': 'MergeAndAddProbability'})
+for input_name, seed_count_id in files_to_run.iteritems():
+
     merge_script = 'scripts/rg-merge-results-add-probability-and-calculate-per-gene-score.py'
     merge_settings = settings['tasks']['MergeAndCollect']
     merge_inputs_local = ",".join([input_name + ".contrafold",
@@ -400,5 +426,6 @@ for f in glob.glob(options.input_dir + "/*.fa"):
                                                    ('l', "h_vmem=%s" % merge_settings.get('mem_req', '2G'))],
                                       'uniqueId': True})
 
+jobber.endGroup()
 jobber.endGroup()
 jobber.launch(options.group_id)

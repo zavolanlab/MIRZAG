@@ -16,6 +16,10 @@ parser.add_argument("--config",
                     dest="config",
                     required=True,
                     help="Config file")
+parser.add_argument("--name-suffix",
+                    dest="name_suffix",
+                    default="test_run",
+                    help="Suffix to add to pipeline name in order to easily differentiate between different run, defaults to test_run")
 
 try:
     options = parser.parse_args()
@@ -36,7 +40,7 @@ jobber = JobClient.Jobber()
 
 #Create a group for whole pipeline. The module "Python" will be inherited by all jobs that are in this group,
 # so we don't need to define it for each job that calls a python script
-pipeline_id = jobber.startGroup({'name': "MIRZA-G",
+pipeline_id = jobber.startGroup({'name': "MIRZA-G_%s" % options.name_suffix,
                                  'options': [['module', "Python"],
                                              ['module', "GCC"],
                                              ['module', "CONTRAfold"]],
@@ -50,7 +54,7 @@ split_files_id = jobber.job(split_command, {'name': "SplitMiRNAs"})
 
 
 #We create a group where the jobs to analyse the splitted files will be put into
-analyse_files_id = jobber.startGroup({'name': "analysis",
+analyse_files_id = jobber.startGroup({'name': "Analysis",
                                     'dependencies': [split_files_id]})
 
 #We call the script that will generate the jobs that will analyse the split files. We pass the id of the group
@@ -58,8 +62,9 @@ analyse_files_id = jobber.startGroup({'name': "analysis",
 analysis_tuple = (os.path.join(pipeline_directory, "run-analysis.py"),
                   output_directory,
                   analyse_files_id,
-                  os.path.abspath(options.config))
-analysis_command = "python %s --input-dir %s --group-id %s --config %s -v" % analysis_tuple
+                  os.path.abspath(options.config),
+                  working_directory)
+analysis_command = "python %s --input-dir %s --group-id %s --config %s -v --working-dir %s" % analysis_tuple
 jobber.job(analysis_command, {'name': "createJobs"})
 
 
@@ -68,7 +73,7 @@ jobber.endGroup()
 # We merge the files into our result file after analysis finishes
 final_merge_command = "zcat {output_dir}/*.score > {cwd}/mirza_g_results.tab".format(output_dir=output_directory,
                                                                                      cwd=working_directory)
-jobber.job(final_merge_command, {'name': "MergeScore",
+jobber.job(final_merge_command, {'name': "MergeResults",
                                  'dependencies': [analyse_files_id]})
 
 
