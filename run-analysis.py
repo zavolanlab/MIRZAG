@@ -29,6 +29,11 @@ parser.add_argument("--working-dir",
                     dest="working_dir",
                     required=True,
                     help="Working directory of the pipeline. Required because this file is launched from ~")
+parser.add_argument("--protocol",
+                    dest="protocol",
+                    default="seed",
+                    choices=("seed", "scan"),
+                    help="Protocol of MIRZA-G, defaults to seed")
 
 try:
     options = parser.parse_args()
@@ -59,68 +64,75 @@ with open(template) as tmpl:
     template = Template(tmpl.read())
 
 files_to_run = {}
-seed_count_group = jobber.startGroup({'name': 'SeedCount'})
-for f in glob.glob(options.input_dir + "/*.fa"):
-    input_name = os.path.splitext(f)[0]
+if options.protocol == "seed":
+    seed_count_group = jobber.startGroup({'name': 'SeedCount'})
+    for f in glob.glob(options.input_dir + "/*.fa"):
+        input_name = os.path.splitext(f)[0]
 
-    #
-    # Calculate seed matches
-    #
-    seed_count_settings = settings['tasks']['CalculateSeedMatches']
-    seed_count_script = 'scripts/rg-count-miRNA-seeds-and-filter-duplicates.py'
-    seed_count_command = """python {script} \\
-                                --motifs {input} \\
-                                --seqs {seqs} \\
-                                --output {output} \\
-                                --how {how} \\
-                                --context {context} \\
-                                --split-by "{split_by}" \\
-                                --index-after-split {index_after_split} \\
-                                -v
-                  """
-    #
-    # If there is template use it for command
-    #
-    if settings['general'].get('executer', 'drmaa') == 'drmaa':
         #
-        # Copy files by default to the tmp directory
+        # Calculate seed matches
         #
-        copy_dir = "$TMPDIR"
-        copy_files = {f: 'mirnas.fa',
-                      settings['general']['seqs']: 'seqs.fa'}
-        moveback = {'output': input_name + ".seedcount"}
+        seed_count_settings = settings['tasks']['CalculateSeedMatches']
+        seed_count_script = 'scripts/rg-count-miRNA-seeds-and-filter-duplicates.py'
+        seed_count_command = """python {script} \\
+                                    --motifs {input} \\
+                                    --seqs {seqs} \\
+                                    --output {output} \\
+                                    --how {how} \\
+                                    --context {context} \\
+                                    --split-by "{split_by}" \\
+                                    --index-after-split {index_after_split} \\
+                                    -v
+                      """
+        #
+        # If there is template use it for command
+        #
+        if settings['general'].get('executer', 'drmaa') == 'drmaa':
+            #
+            # Copy files by default to the tmp directory
+            #
+            copy_dir = "$TMPDIR"
+            copy_files = {f: 'mirnas.fa',
+                          settings['general']['seqs']: 'seqs.fa'}
+            moveback = {'output': input_name + ".seedcount"}
 
-        seed_command_rendered = template.render(modules=seed_count_settings.get('modules', None),
-                                           command=seed_count_command,
-                                           copy=copy_files,
-                                           moveback=moveback,
-                                           copydir=copy_dir)
-        seed_count_command = str(seed_command_rendered).format(**{'script': os.path.join(pip_dir, seed_count_script),
-                                       'input': 'mirnas.fa',
-                                       'seqs': 'seqs.fa',
-                                       'output': 'output',
-                                       'how': seed_count_settings.get('how', 'TargetScan'),
-                                        'split_by': seed_count_settings.get('split_by', "NONE"),
-                                       'index_after_split': seed_count_settings.get('index_after_split', 0),
-                                       'context': seed_count_settings.get('context', 50)})
-    else:
-        seed_count_command = str(seed_count_command).format(**{'script': os.path.join(pip_dir, seed_count_script),
-                                       'input': f,
-                                       'seqs': settings['general']['seqs'],
-                                       'output': input_name + ".seedcount",
-                                       'how': seed_count_settings.get('how', 'TargetScan'),
-                                        'split_by': seed_count_settings.get('split_by', "NONE"),
-                                       'index_after_split': seed_count_settings.get('index_after_split', 0),
-                                       'context': seed_count_settings.get('context', 50)})
-    seed_count_id = jobber.job(seed_count_command,
-                               {'name': 'SeedCount',
-                                'uniqueId': True,
-                                'options': [('q', seed_count_settings.get('queue', 'short.q')),
-                                            ('l', "h_vmem=%s" % seed_count_settings.get('mem_req', '2G'))]
-                                })
-    files_to_run[input_name] = seed_count_id
+            seed_command_rendered = template.render(modules=seed_count_settings.get('modules', None),
+                                               command=seed_count_command,
+                                               copy=copy_files,
+                                               moveback=moveback,
+                                               copydir=copy_dir)
+            seed_count_command = str(seed_command_rendered).format(**{'script': os.path.join(pip_dir, seed_count_script),
+                                           'input': 'mirnas.fa',
+                                           'seqs': 'seqs.fa',
+                                           'output': 'output',
+                                           'how': seed_count_settings.get('how', 'TargetScan'),
+                                            'split_by': seed_count_settings.get('split_by', "NONE"),
+                                           'index_after_split': seed_count_settings.get('index_after_split', 0),
+                                           'context': seed_count_settings.get('context', 50)})
+        else:
+            seed_count_command = str(seed_count_command).format(**{'script': os.path.join(pip_dir, seed_count_script),
+                                           'input': f,
+                                           'seqs': settings['general']['seqs'],
+                                           'output': input_name + ".seedcount",
+                                           'how': seed_count_settings.get('how', 'TargetScan'),
+                                            'split_by': seed_count_settings.get('split_by', "NONE"),
+                                           'index_after_split': seed_count_settings.get('index_after_split', 0),
+                                           'context': seed_count_settings.get('context', 50)})
+        seed_count_id = jobber.job(seed_count_command,
+                                   {'name': 'SeedCount',
+                                    'uniqueId': True,
+                                    'options': [('q', seed_count_settings.get('queue', 'short.q')),
+                                                ('l', "h_vmem=%s" % seed_count_settings.get('mem_req', '2G'))]
+                                    })
+        files_to_run[input_name] = seed_count_id
 
-jobber.endGroup()
+    jobber.endGroup()
+
+if options.protocol == 'scan':
+    for f in glob.glob(options.input_dir + "/*.seedcount"):
+        input_name = os.path.splitext(f)[0]
+        files_to_run[input_name] = None
+
 features_group_id = jobber.startGroup({'name': "Features_Group"})
 
 #
@@ -193,7 +205,7 @@ for input_name, seed_count_id in files_to_run.iteritems():
 
     calculate_mirza_id = jobber.job(calculate_mirza_command, {
                                       'name': 'CalculateMIRZA',
-                                      'dependencies': [seed_count_id],
+                                      'dependencies': [seed_count_id] if seed_count_id is not None else [],
                                        'options': [('q', mirza_settings.get('queue', 'short.q')),
                                                    ('l', "h_vmem=%s" % mirza_settings.get('mem_req', '2G'))],
                                       'uniqueId': True})
@@ -252,7 +264,7 @@ for input_name, seed_count_id in files_to_run.iteritems():
 
     calculate_contrafold_id = jobber.job(contrafold_command, {
                                       'name': 'CalculateCONTRAfold',
-                                      'dependencies': [seed_count_id],
+                                      'dependencies': [seed_count_id] if seed_count_id is not None else [],
                                        'options': [('q', contrafold_settings.get('queue', 'short.q')),
                                                    ('l', "h_vmem=%s" % contrafold_settings.get('mem_req', '2G'))],
                                       'uniqueId': True})
@@ -301,7 +313,7 @@ for input_name, seed_count_id in files_to_run.iteritems():
                                  })
     calculate_flanks_id = jobber.job(flanks_command, {
                                       'name': 'CalculateFlanks',
-                                      'dependencies': [seed_count_id],
+                                      'dependencies': [seed_count_id] if seed_count_id is not None else [],
                                        'options': [('q', calculate_flanks_settings.get('queue', 'short.q')),
                                                    ('l', "h_vmem=%s" % calculate_flanks_settings.get('mem_req', '2G'))],
                                       'uniqueId': True})
@@ -348,7 +360,7 @@ for input_name, seed_count_id in files_to_run.iteritems():
                                     })
     calculate_distance_id = jobber.job(distance_command, {
                                       'name': 'CalculateDistance',
-                                      'dependencies': [seed_count_id],
+                                      'dependencies': [seed_count_id] if seed_count_id is not None else [],
                                        'options': [('q', calculate_distance_settings.get('queue', 'short.q')),
                                                    ('l', "h_vmem=%s" % calculate_distance_settings.get('mem_req', '2G'))],
                                       'uniqueId': True})
