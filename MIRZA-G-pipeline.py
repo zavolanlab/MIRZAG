@@ -2,6 +2,7 @@ import os
 import sys
 import shutil
 import random
+import traceback
 from errno import EEXIST
 
 from configobj import ConfigObj
@@ -90,7 +91,7 @@ if options.command == 'clean':
                 shutil.rmtree(output_directory)
             except OSError:
                 if options.verbose:
-                    syserr("No such file or directory: %s\n" % output_directory)
+                    syserr(" -> no such file or directory: %s\n" % output_directory)
             files_to_delete = ["mirza_g_results_scan.tab",
                                "mirza_g_results_seed.tab"]
             for f in files_to_delete:
@@ -100,11 +101,11 @@ if options.command == 'clean':
                     os.remove(os.path.join(working_directory, f))
                 except OSError, e:
                     if options.verbose:
-                        syserr("No such file or directory: %s\n" % os.path.join(working_directory, f))
+                        syserr(" -> no such file or directory: %s\n" % os.path.join(working_directory, f))
             if options.verbose:
                 syserr("All output files and directories were cleaned\n")
     except Exception as e:
-        raise e
+        syserr(traceback.format_exc())
     finally:
         sys.exit()
 
