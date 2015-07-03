@@ -106,8 +106,8 @@ if options.protocol == "seed":
                                            'seqs': 'seqs.fa',
                                            'output': 'output',
                                            'how': seed_count_settings.get('how', 'TargetScan'),
-                                            'split_by': seed_count_settings.get('split_by', "NONE"),
-                                           'index_after_split': seed_count_settings.get('index_after_split', 0),
+                                            'split_by': settings['general'].get('split_by', "NONE"),
+                                           'index_after_split': settings['general'].get('index_after_split', 0),
                                            'context': seed_count_settings.get('context', 50)})
         else:
             seed_count_command = str(seed_count_command).format(**{'script': os.path.join(pip_dir, seed_count_script),
@@ -115,8 +115,8 @@ if options.protocol == "seed":
                                            'seqs': settings['general']['seqs'],
                                            'output': input_name + ".seedcount",
                                            'how': seed_count_settings.get('how', 'TargetScan'),
-                                            'split_by': seed_count_settings.get('split_by', "NONE"),
-                                           'index_after_split': seed_count_settings.get('index_after_split', 0),
+                                            'split_by': settings['general'].get('split_by', "NONE"),
+                                           'index_after_split': settings['general'].get('index_after_split', 0),
                                            'context': seed_count_settings.get('context', 50)})
         seed_count_id = jobber.job(seed_count_command,
                                    {'name': 'SeedCount',
@@ -185,7 +185,7 @@ for input_name, seed_count_id in files_to_run.iteritems():
                             'tree': mirza_settings.get('phylogenetic_tree', 'any/path'),
                             'mlndir': mirza_settings.get('alignment_directory', 'any/path'),
                             'threshold': mirza_settings.get('threshold', 50),
-                            'onlymirza': mirza_settings.get('run_only_MIRZA', "yes"),
+                            'onlymirza': settings['general'].get('run_only_MIRZA', "yes"),
                             'mirzabin': settings['general']['mirza_binary'],
                             })
     else:
@@ -199,7 +199,7 @@ for input_name, seed_count_id in files_to_run.iteritems():
                             'tree': mirza_settings.get('phylogenetic_tree', 'any/path'),
                             'mlndir': mirza_settings.get('alignment_directory', 'any/path'),
                             'threshold': mirza_settings.get('threshold', 50),
-                            'onlymirza': mirza_settings.get('run_only_MIRZA', "yes"),
+                            'onlymirza': settings['general'].get('run_only_MIRZA', "yes"),
                             'mirzabin': settings['general']['mirza_binary'],
                             })
 
@@ -414,10 +414,10 @@ for input_name, seed_count_id in files_to_run.iteritems():
                                   'coords': "input.seedcount",
                                   'model_bls':   settings['general']['model_with_bls'],
                                   'model_nobls': settings['general']['model_without_bls'],
-                                  'onlymirza': merge_settings.get('run_only_MIRZA', 'yes'),
+                                  'onlymirza': settings['general'].get('run_only_MIRZA', 'yes'),
                                   'threshold': merge_settings.get('threshold', 0.12),
-                                  'split_by':  merge_settings.get('split_by', "NOTHING"),
-                                  'column':    merge_settings.get('index_after_split', 0),
+                                  'split_by':  settings['general'].get('split_by', "NOTHING"),
+                                  'column':    settings['general'].get('index_after_split', 0),
                                  })
     else:
         merge_command = str(merge_command).format(**{'script': os.path.join(pip_dir, merge_script),
@@ -426,10 +426,10 @@ for input_name, seed_count_id in files_to_run.iteritems():
                                   'coords': input_name + ".seedcount",
                                   'model_bls':   settings['general']['model_with_bls'],
                                   'model_nobls': settings['general']['model_without_bls'],
-                                  'onlymirza': merge_settings.get('run_only_MIRZA', 'yes'),
+                                  'onlymirza': settings['general'].get('run_only_MIRZA', 'yes'),
                                   'threshold': merge_settings.get('threshold', 0.12),
-                                  'split_by':  merge_settings.get('split_by', "NOTHING"),
-                                  'column':    merge_settings.get('index_after_split', 0),
+                                  'split_by':  settings['general'].get('split_by', "NOTHING"),
+                                  'column':    settings['general'].get('index_after_split', 0),
                                  })
     merge_id = jobber.job(merge_command, {
                                       'name': 'MergeAndCollect',

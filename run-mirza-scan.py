@@ -158,15 +158,15 @@ if settings['general'].get('executer', 'drmaa') == 'drmaa':
     filter_results_command = str(filter_results_command_rendered).format(**{'script': os.path.join(pip_dir, filter_results_script),
                                      'input': 'input',
                                      'output': 'output',
-                                     'index_after_split': filter_results_settings['index_after_split'],
-                                     'split_by': filter_results_settings['split_by'],
+                                     'index_after_split': settings['general'].get('index_after_split'),
+                                     'split_by': settings['general'].get('split_by', "NONE"),
                                    })
 else:
     filter_results_command = str(filter_results_command).format(**{'script': os.path.join(pip_dir, filter_results_script),
                                      'input': os.path.join(options.input_dir, "scan_results.tab"),
                                      'output': os.path.join(options.input_dir, "scan_result.filtered"),
-                                     'index_after_split': filter_results_settings['index_after_split'],
-                                     'split_by': filter_results_settings['split_by'],
+                                     'index_after_split': settings['general'].get('index_after_split'),
+                                     'split_by': settings['general'].get('split_by', "NONE"),
                                    })
 filter_results_id = jobber.job(filter_results_command,
                            {'name': 'FilterScan',
