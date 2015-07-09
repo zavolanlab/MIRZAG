@@ -122,7 +122,7 @@ if options.protocol == "seed":
                                    {'name': 'SeedCount',
                                     'uniqueId': True,
                                     'options': [('q', seed_count_settings.get('queue', 'short.q')),
-                                                ('l', "h_vmem=%s" % seed_count_settings.get('mem_req', '2G'))]
+                                                ('l', "membycore=%s" % seed_count_settings.get('mem_req', '2G'))]
                                     })
         files_to_run[input_name] = seed_count_id
 
@@ -207,7 +207,7 @@ for input_name, seed_count_id in files_to_run.iteritems():
                                       'name': 'CalculateMIRZA',
                                       'dependencies': [seed_count_id] if seed_count_id is not None else [],
                                        'options': [('q', mirza_settings.get('queue', 'short.q')),
-                                                   ('l', "h_vmem=%s" % mirza_settings.get('mem_req', '2G'))],
+                                                   ('l', "membycore=%s" % mirza_settings.get('mem_req', '2G'))],
                                       'uniqueId': True})
 
 jobber.endGroup()
@@ -266,7 +266,7 @@ for input_name, seed_count_id in files_to_run.iteritems():
                                       'name': 'CalculateCONTRAfold',
                                       'dependencies': [seed_count_id] if seed_count_id is not None else [],
                                        'options': [('q', contrafold_settings.get('queue', 'short.q')),
-                                                   ('l', "h_vmem=%s" % contrafold_settings.get('mem_req', '2G'))],
+                                                   ('l', "membycore=%s" % contrafold_settings.get('mem_req', '2G'))],
                                       'uniqueId': True})
 jobber.endGroup()
 #
@@ -315,7 +315,7 @@ for input_name, seed_count_id in files_to_run.iteritems():
                                       'name': 'CalculateFlanks',
                                       'dependencies': [seed_count_id] if seed_count_id is not None else [],
                                        'options': [('q', calculate_flanks_settings.get('queue', 'short.q')),
-                                                   ('l', "h_vmem=%s" % calculate_flanks_settings.get('mem_req', '2G'))],
+                                                   ('l', "membycore=%s" % calculate_flanks_settings.get('mem_req', '2G'))],
                                       'uniqueId': True})
 
 jobber.endGroup()
@@ -362,7 +362,7 @@ for input_name, seed_count_id in files_to_run.iteritems():
                                       'name': 'CalculateDistance',
                                       'dependencies': [seed_count_id] if seed_count_id is not None else [],
                                        'options': [('q', calculate_distance_settings.get('queue', 'short.q')),
-                                                   ('l', "h_vmem=%s" % calculate_distance_settings.get('mem_req', '2G'))],
+                                                   ('l', "membycore=%s" % calculate_distance_settings.get('mem_req', '2G'))],
                                       'uniqueId': True})
 jobber.endGroup()
 jobber.endGroup()
@@ -435,7 +435,7 @@ for input_name, seed_count_id in files_to_run.iteritems():
                                       'name': 'MergeAndCollect',
                                       'dependencies': [features_group_id],
                                        'options': [('q', merge_settings.get('queue', 'short.q')),
-                                                   ('l', "h_vmem=%s" % merge_settings.get('mem_req', '2G'))],
+                                                   ('l', "membycore=%s" % merge_settings.get('mem_req', '2G'))],
                                       'uniqueId': True})
 
 jobber.endGroup()
