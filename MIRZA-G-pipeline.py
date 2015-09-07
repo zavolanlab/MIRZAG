@@ -4,6 +4,7 @@ import shutil
 import random
 import traceback
 from errno import EEXIST
+from Jobber import JobClient
 
 from configobj import ConfigObj
 from argparse import ArgumentParser, RawTextHelpFormatter
@@ -113,9 +114,7 @@ settings = ConfigObj(options.config).dict()
 mkdir_p(output_directory)
 if options.protocol == "scan":
     mkdir_p(os.path.join(output_directory, "MIRZAscan"))
-jobber_path = settings['general']['jobber_path']
-sys.path.append(jobber_path)
-from jobber import JobClient
+
 
 jobber = JobClient.Jobber()
 
@@ -185,7 +184,9 @@ analysis_tuple = (os.path.join(pipeline_directory, "run-analysis.py"),
                   working_directory,
                   options.protocol)
 analysis_command = "python %s --input-dir %s --group-id %s --config %s -v --working-dir %s --protocol %s" % analysis_tuple
-jobber.job(analysis_command, {'name': "createJobs"})
+jobber.job(analysis_command, {'name': "CreateAnalysisJobs",
+                              'options': [('q', 'long.q')],
+                              })
 
 
 jobber.endGroup()
@@ -202,7 +203,7 @@ jobber.endGroup()
 
 # Before launching we print the command to stop the pipeline
 print "In order to stop the pipeline run a command:"
-print "python %s/jobber_server.py -command delete -jobId %i" % (jobber_path, pipeline_id)
+print "jobber_server -command delete -jobId %i" % (pipeline_id)
 
 #You need to always launch, otherwise jobs wont get executed.
 jobber.launch(pipeline_id)

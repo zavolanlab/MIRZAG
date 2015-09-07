@@ -1,5 +1,6 @@
 # Ignore everything
 *
+/data
 
 # But not these files...
 !*/

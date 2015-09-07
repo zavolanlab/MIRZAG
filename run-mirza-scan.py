@@ -4,6 +4,7 @@ import os
 import sys
 from configobj import ConfigObj
 from jinja2 import Template
+from Jobber import JobClient
 from argparse import ArgumentParser, RawTextHelpFormatter
 
 parser = ArgumentParser(description=__doc__, formatter_class=RawTextHelpFormatter)
@@ -39,9 +40,6 @@ settings = ConfigObj(options.config).dict()
 
 thisDir = options.working_dir
 pip_dir = os.path.dirname(os.path.abspath(__file__))
-jobberDir = settings['general']['jobber_path']
-sys.path.append(jobberDir)
-from jobber import JobClient
 
 jobber = JobClient.Jobber()
 
