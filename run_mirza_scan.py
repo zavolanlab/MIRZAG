@@ -64,7 +64,7 @@ for f in glob.glob(options.input_dir + "/*.fa"):
     # Calculate seed matches
     #
     scan_settings = settings['tasks']['ScanWithMIRZA']
-    scan_script = 'scripts/rg-extract-data-from-mirza-output.py'
+    scan_script = 'scripts/rg_extract_data_from_mirza_output.py'
     scan_command = """{mirza_bin} {expressions} {mrnas} {mirnas} 50 noupdate | python {script} \\
                                 --seqs {seqs} \\
                                 --output {output} \\
@@ -129,7 +129,7 @@ merge_id = jobber.job(merge_command, {'name': "MergeScan",
 # Filter results
 
 filter_results_settings = settings['tasks']['FilterScan']
-filter_results_script = 'scripts/rg-filter-duplicates-from-scan.py'
+filter_results_script = 'scripts/rg_filter_duplicates_from_scan.py'
 filter_results_command = """python {script} \\
                                 --coords {input} \\
                                 --output {output} \\

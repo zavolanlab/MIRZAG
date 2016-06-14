@@ -11,6 +11,7 @@ __license__ = "GPL"
 # imports
 import sys
 import time
+import gzip
 from collections import defaultdict
 from argparse import ArgumentParser, RawTextHelpFormatter
 
@@ -44,17 +45,11 @@ parser.add_argument("--gzip",
                     default=False,
                     help="Gzip output file")
 
-try:
-    options = parser.parse_args()
-except Exception, e:
-    parser.print_help()
 
 # redefine a functions for writing to stdout and stderr to save some writting
 syserr = sys.stderr.write
 sysout = sys.stdout.write
 
-if options.gzip:
-    import gzip
 
 # class MyDict(dict):
 
@@ -69,7 +64,7 @@ if options.gzip:
 #         return self[key]
 
 
-def main():
+def main(options):
     """Main logic of the script"""
     # if options.gzip:
     #     files = MyDict(lambda x: gzip.open(x, "a"))
@@ -91,11 +86,16 @@ def main():
 
 if __name__ == '__main__':
     try:
+        try:
+            options = parser.parse_args()
+        except Exception, e:
+            parser.print_help()
+            sys.exit()
         if options.verbose:
             start_time = time.time()
             start_date = time.strftime("%d-%m-%Y at %H:%M:%S")
             syserr("############## Started script on %s ##############\n" % start_date)
-        main()
+        main(options)
         if options.verbose:
             syserr("### Successfully finished in %i seconds, on %s ###\n" % (time.time() - start_time, time.strftime("%d-%m-%Y at %H:%M:%S")))
     except KeyboardInterrupt:

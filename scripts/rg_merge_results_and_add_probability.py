@@ -46,10 +46,6 @@ parser.add_argument("--only-mirza",
                     dest="only_mirza",
                     help="Calculate only MIRZA and DON'T calculate MIRZA BLS")
 
-try:
-    options = parser.parse_args()
-except Exception, e:
-    parser.print_help()
 
 # redefine a functions for writing to stdout and stderr to save some writting
 syserr = sys.stderr.write
@@ -58,7 +54,7 @@ sysout = sys.stdout.write
 class EmptyDataException(Exception): pass
 
 
-def main():
+def main(options):
     """Main logic of the script"""
     #
     # Define mapping from column names to pretty names
@@ -254,12 +250,17 @@ def dot_product(x, y):
 
 if __name__ == '__main__':
     try:
+        try:
+            options = parser.parse_args()
+        except Exception, e:
+            parser.print_help()
+            sys.exit()
         if options.verbose:
             start_time = time.time()
             start_date = time.strftime("%d-%m-%Y at %H:%M:%S")
             syserr("############## Started script on %s ##############\n" % start_date)
         try:
-            main()
+            main(options)
         except EmptyDataException, e:
             syserr(str(e) + "\n")
         if options.verbose:

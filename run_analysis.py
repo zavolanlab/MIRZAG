@@ -71,7 +71,7 @@ if options.protocol == "seed":
         # Calculate seed matches
         #
         seed_count_settings = settings['tasks']['CalculateSeedMatches']
-        seed_count_script = 'scripts/rg-count-miRNA-seeds-and-filter-duplicates.py'
+        seed_count_script = 'scripts/rg_count_miRNA_seeds_and_filter_duplicates.py'
         seed_count_command = """python {script} \\
                                     --motifs {input} \\
                                     --seqs {seqs} \\
@@ -142,7 +142,7 @@ for input_name, seed_count_id in files_to_run.iteritems():
     # Create group for each file in order to calculate features
     #
     mirza_settings = settings['tasks']['CalculateMIRZA']
-    mirza_script = 'scripts/rg-calculate-MIRZA.py'
+    mirza_script = 'scripts/rg_calculate_MIRZA.py'
     calculate_mirza_command = """python {script} \\
                     --out {output} \\
                     --seq {seqs} \\
@@ -215,7 +215,7 @@ jobber.endGroup()
 contrafold_group = jobber.startGroup({'name': 'CONTRAfold'})
 for input_name, seed_count_id in files_to_run.iteritems():
     contrafold_settings = settings['tasks']['CalculateCONTRAfold']
-    contrafold_script = 'scripts/rg-calculate-contrafold.py'
+    contrafold_script = 'scripts/rg_calculate_contrafold.py'
     contrafold_command = """python {script} \\
                                 --out {output} \\
                                 --seq {seqs} \\
@@ -273,7 +273,7 @@ jobber.endGroup()
 flanks_group = jobber.startGroup({'name': 'Flanks'})
 for input_name, seed_count_id in files_to_run.iteritems():
     calculate_flanks_settings = settings['tasks']['CalculateFlanks']
-    flanks_script = 'scripts/rg-calculate-flanks-composition.py'
+    flanks_script = 'scripts/rg_calculate_flanks_composition.py'
     flanks_command = """python {script} \\
                             --out {output} \\
                             --seq {seqs} \\
@@ -323,7 +323,7 @@ jobber.endGroup()
 distance_group = jobber.startGroup({'name': 'Distance'})
 for input_name, seed_count_id in files_to_run.iteritems():
     calculate_distance_settings = settings['tasks']['CalculateDistance']
-    distance_script = 'scripts/rg-calculate-distance.py'
+    distance_script = 'scripts/rg_calculate_distance.py'
     distance_command = """python {script} \\
                             --out {output} \\
                             --seq {seqs} \\
@@ -370,7 +370,7 @@ jobber.endGroup()
 add_probability_group = jobber.startGroup({'name': 'MergeAndAddProbability'})
 for input_name, seed_count_id in files_to_run.iteritems():
 
-    merge_script = 'scripts/rg-merge-results-add-probability-and-calculate-per-gene-score.py'
+    merge_script = 'scripts/rg_merge_results_add_probability_and_calculate_per_gene_score.py'
     merge_settings = settings['tasks']['MergeAndCollect']
     merge_inputs_local = ",".join([input_name + ".contrafold",
                              input_name + ".mirza",

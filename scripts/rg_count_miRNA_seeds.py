@@ -44,16 +44,12 @@ parser.add_argument("--context",
                     default=50,
                     help="Context for sequence to print, defaults to 50")
 
-try:
-    options = parser.parse_args()
-except Exception, e:
-    parser.print_help()
 
 # redefine a functions for writing to stdout and stderr to save some writting
 syserr = sys.stderr.write
 sysout = sys.stdout.write
 
-def main():
+def main(options):
     """Main logic of the script"""
     motifs = {str(rec.id):Seq.Seq(str(rec.seq).upper().replace('U','T')) for rec in SeqIO.parse(options.motifs, 'fasta')}
     seqs = {str(rec.id):str(rec.seq).upper().replace('U','T') for rec in SeqIO.parse(options.seqs, 'fasta')}
@@ -171,10 +167,15 @@ def calculate_distance_to_boundary(mRNAlen, begpos):
 if __name__ == '__main__':
     start_time = time.time()
     try:
+        try:
+            options = parser.parse_args()
+        except Exception, e:
+            parser.print_help()
+            sys.exit()
         if options.verbose:
             start_date = time.strftime("%d-%m-%Y at %H:%M:%S")
             syserr("############## Started script on %s ##############\n" % start_date)
-        main()
+        main(options)
         if options.verbose:
             syserr("### Successfully finished in %i seconds, on %s ###\n" % (time.time() - start_time, time.strftime("%d-%m-%Y at %H:%M:%S")))
     except KeyboardInterrupt:

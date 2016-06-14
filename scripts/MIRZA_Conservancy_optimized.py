@@ -16,39 +16,187 @@ from Bio import SeqIO
 from sys import exit
 
 # parse arguments and store them in the variables
-argparser = optparse.OptionParser()
-argparser.add_option('-v', '--verbose', dest='verbose', action="store_true",
+parser = optparse.OptionParser()
+parser.add_option('-v', '--verbose', dest='verbose', action="store_true",
                      default=False)
-argparser.add_option('--onlyMIRZA', dest='onlymirza', action="store",
+parser.add_option('--onlyMIRZA', dest='onlymirza', action="store",
                      default='no', help='calculate only MIRZA score for given coordinates')
-argparser.add_option('--seq', default='seqs.fa', dest='seq',
+parser.add_option('--seq', default='seqs.fa', dest='seq',
                      action='store', help='fasta with mRNA sequences')
-argparser.add_option('--out', '-o', default='output.tab', dest='out',
+parser.add_option('--out', '-o', default='output.tab', dest='out',
                      action='store', help='output table')
-argparser.add_option('--coords', default='coords.tab', dest='coords',
+parser.add_option('--coords', default='coords.tab', dest='coords',
                      action='store', help='file with target sites positions, miRNA and target gene ID')
-argparser.add_option('--motifs', default='', dest='motifs',
+parser.add_option('--motifs', default='', dest='motifs',
                      action='store', help='fasta file with miRNA sequences')
-argparser.add_option('--tree', default='', dest='tree',
+parser.add_option('--tree', default='', dest='tree',
                      action='store', help='phylogenetic tree of the species used in alignment file')
-argparser.add_option('--mln-dir', default='', dest='mln_dir',
+parser.add_option('--mln-dir', default='', dest='mln_dir',
                      action='store', help='Directory with multiple alignment files')
-argparser.add_option('--threshold', type=float, dest='thr', default=20.0,
+parser.add_option('--threshold', type=float, dest='thr', default=20.0,
                      action='store', help='Threshold for MIRZA score')
-argparser.add_option('--contextLen', type=str, dest='contextLen', default="50",
+parser.add_option('--contextLen', type=str, dest='contextLen', default="50",
                      action='store', help='length of the context sequence serounding binding site')
-argparser.add_option('--mirzabin', dest='mirzabin', action="store",
+parser.add_option('--mirzabin', dest='mirzabin', action="store",
                      default="", help="Path to the MIRZA binary")
-argparser.add_option('--reforg', dest='reforg', action="store",
+parser.add_option('--reforg', dest='reforg', action="store",
                      default="hg19", help="Reference organism to which alignments are performed: default: hg19")
 
-arguments, args = argparser.parse_args()
-verbose = arguments.verbose
-if arguments.onlymirza not in ["yes", "no"]:
-    print "onlyMIRZA option has to be 'yes' or 'no'"
-    print argparser.print_help()
-    sys.exit()
-# Define runMIRZA function to run MIRZA and obtaine score
+
+
+def main(arguments, verbose):
+    #
+    # Read coords file into the table: [geneID, miR name, begining position,
+    # end position]
+    #
+    coords = []
+    if verbose:
+        print "Reading sequences from coordinate file %s" % (arguments.coords)
+    try:
+        corfile = open(arguments.coords, 'r')
+    except IOError:
+        raise IOError('Cannot read from coordinate file %s' % (arguments.coords))
+    for coord in corfile:
+        coord = coord.rstrip().split()
+        try:
+            coords.append([coord[0], coord[1], int(coord[2]), int(coord[3]), coord[4]])
+        except IndexError:
+            sys.stderr.write("IndexError in coordinate file, line: %s" % (' '.join(coord)))
+        except ValueError, e:
+            print str(e)
+
+    #
+    # Read mRNA sequences into hash table: {id:sequence}
+    #
+    if verbose:
+        print "Reading sequences from mRNA file %s" % (arguments.seq)
+    try:
+        seq_obj = open(arguments.seq, 'Ur')
+        mRNAseqs = {}
+        for seq in SeqIO.parse(seq_obj, 'fasta'):
+            mRNAseqs[str(seq.id)] = str(seq.seq)
+    except IOError:
+        raise IOError('Cannot read from mRNA file %s' % (arguments.seq))
+
+    #
+    # In the same way read the miRNA file
+    #
+    if verbose:
+        print "Reading sequences from miRNA file %s" % (arguments.motifs)
+    try:
+        miRNAseq_obj = open(arguments.motifs, 'Ur')
+        miRNAseqs = {}
+        for seq in SeqIO.parse(miRNAseq_obj, 'fasta'):
+            miRNAseqs[str(seq.id)] = str(seq.seq)
+    except IOError:
+        raise IOError('Cannot read from miRNA file %s' % (arguments.motifs))
+
+
+    if arguments.onlymirza != 'yes':
+        try:
+            phylo_tree = dendropy.Tree()
+            phylo_tree.read_from_path(arguments.tree, "newick")
+        except IOError:
+            raise IOError("Cannot open phylogenetic tree %s" % arguments.tree)
+
+        # make miRNAs for all species
+        # get the names of the species in the tree
+        species = [leaf.taxon.label for leaf in phylo_tree.leaf_iter()]
+        mirhomologues = pd.DataFrame({sp: {mirid: miRNAseqs[mirid][:21]
+                                           for mirid in miRNAseqs.keys()}
+                                      for sp in species}).transpose()
+
+        # Read multiple alignment file (it is special format - see the exemplary file)
+        multiple_alignment_dict = {}
+        for coord in coords:
+            try:
+                handle = open(os.path.join(arguments.mln_dir, coord[0]), 'rb')
+                multiple_alignment_dict[coord[0]] = cpickle.load(handle)
+            except Exception, e:
+                sys.stderr.write("No alignment for %s, going on without it.\n" % coord[0])
+                sys.stderr.write(str(e) + "\n")
+    #
+    # Open output file and write first lines
+    #
+    try:
+        outfile = open(arguments.out, 'w')
+    except IOError:
+        print "Connot open output file %s" % (arguments.out)
+
+    #
+    # write the header to the file
+    #
+    outfile.write('#siteID\tMIRZAscore\thybrid\tMIRZABranchLengthScoreFill\ttype\tprecise_type\n')
+
+    if verbose is True:
+        print "Calculating MIRZA target quality... "
+
+
+    sys.stderr.write("Collecting sequences\n")
+    mRNA_sequences = [cor[-1] for cor in coords]
+    mRNA_ids = ["%s,%s,%s" % (cor[0], cor[2], cor[3]) for cor in coords]
+    assert len(set([cor[1] for cor in coords])) == 1
+    miRNAseq = miRNAseqs[list(set([cor[1] for cor in coords]))[0]][:21]
+    miRNAid = list(set([cor[1] for cor in coords]))[0]
+
+    sys.stderr.write("Running MIRZA\n")
+    results = calculate_mirza(mRNA_sequences, mRNA_ids, miRNAseq, miRNAid)
+    sys.stderr.write("Collecting results\n")
+    for key, group in it.groupby(results.splitlines(), lambda x: x == ""):
+        if not key:
+            proper_group = False
+            for line in group:
+                if line.startswith(">"):
+                    mRNAid = line.split()[0][1:].split(",")[0]
+                    beg = line.split()[0][1:].split(",")[1]
+                    end = line.split()[0][1:].split(",")[2]
+                    score = float(line.split()[-1])
+                    proper_group = True
+                elif line.startswith("miRNA"):
+                    mirhyb = line.split("\t")[1].split(" ")[0]
+                elif line.startswith("A L"):
+                    hyb = line.split("\t")[1].rstrip()
+                elif line.startswith("mRNA"):
+                    mrhyb = line.split("\t")[1].split(" ")[0]
+            if proper_group:
+                hybrids = [mirhyb, hyb, mrhyb]
+                mirseq, hybseq, mrhybseq, mrpos = getHybridVector(hybrids)
+                canonical, type_of_site = is_canonical([mirseq, hybseq, mrhybseq])
+                if arguments.onlymirza != 'yes':
+                    try:
+                        mln_frag = multiple_alignment_dict[mRNAid]
+                        qd = getConservacy(phylotree=phylo_tree,
+                                           mrna_frag=mrhyb.replace("-", "")[::-1],
+                                           mrnaid=mRNAid,
+                                           mirna=mirhomologues,
+                                           mirname=miRNAid,
+                                           mln_dict=mln_frag,
+                                           ref_org=arguments.reforg,
+                                           threshold=arguments.thr,
+                                           seqlen=int(arguments.contextLen))
+                        qd = str(qd)
+                    except KeyError, e:
+                        qd = "NA"
+                        sys.stderr.write("KeyError:  " + str(e) + "\n")
+                        sys.stderr.write("Trace:  "
+                                         + traceback.format_exc()
+                                         + "\n")
+                        # raise KeyError
+                else:
+                    qd = "NA"
+                outtext = '%s,%s,%s,%s\t%f\t%s\t%s\t%s\t%s\n' % (mRNAid,
+                                                             miRNAid,
+                                                             beg,
+                                                             end,
+                                                             score,
+                                                             ":".join(hybrids),
+                                                             qd,
+                                                             "canonical" if canonical else "non-canonical",
+                                                             type_of_site)
+                outfile.write(outtext)
+
+    outfile.close()
+    clean()
 
 
 def calculate_mirza(mRNAseqs, mRNAids, miRNAseq, miRNAid, update='noupdate'):
@@ -481,155 +629,12 @@ def is_canonical(hybrids):
             return False, "unknown"
 
 
-#
-# Read coords file into the table: [geneID, miR name, begining position,
-# end position]
-#
-coords = []
-if verbose:
-    print "Reading sequences from coordinate file %s" % (arguments.coords)
-try:
-    corfile = open(arguments.coords, 'r')
-except IOError:
-    raise IOError('Cannot read from coordinate file %s' % (arguments.coords))
-for coord in corfile:
-    coord = coord.rstrip().split()
-    try:
-        coords.append([coord[0], coord[1], int(coord[2]), int(coord[3]), coord[4]])
-    except IndexError:
-        sys.stderr.write("IndexError in coordinate file, line: %s" % (' '.join(coord)))
-    except ValueError, e:
-        print str(e)
 
-#
-# Read mRNA sequences into hash table: {id:sequence}
-#
-if verbose:
-    print "Reading sequences from mRNA file %s" % (arguments.seq)
-try:
-    seq_obj = open(arguments.seq, 'Ur')
-    mRNAseqs = {}
-    for seq in SeqIO.parse(seq_obj, 'fasta'):
-        mRNAseqs[str(seq.id)] = str(seq.seq)
-except IOError:
-    raise IOError('Cannot read from mRNA file %s' % (arguments.seq))
-
-#
-# In the same way read the miRNA file
-#
-if verbose:
-    print "Reading sequences from miRNA file %s" % (arguments.motifs)
-try:
-    miRNAseq_obj = open(arguments.motifs, 'Ur')
-    miRNAseqs = {}
-    for seq in SeqIO.parse(miRNAseq_obj, 'fasta'):
-        miRNAseqs[str(seq.id)] = str(seq.seq)
-except IOError:
-    raise IOError('Cannot read from miRNA file %s' % (arguments.motifs))
-
-
-if arguments.onlymirza != 'yes':
-    try:
-        phylo_tree = dendropy.Tree()
-        phylo_tree.read_from_path(arguments.tree, "newick")
-    except IOError:
-        raise IOError("Cannot open phylogenetic tree %s" % arguments.tree)
-
-    # make miRNAs for all species
-    # get the names of the species in the tree
-    species = [leaf.taxon.label for leaf in phylo_tree.leaf_iter()]
-    mirhomologues = pd.DataFrame({sp: {mirid: miRNAseqs[mirid][:21]
-                                       for mirid in miRNAseqs.keys()}
-                                  for sp in species}).transpose()
-
-    # Read multiple alignment file (it is special format - see the exemplary file)
-    multiple_alignment_dict = {}
-    for coord in coords:
-        try:
-            handle = open(os.path.join(arguments.mln_dir, coord[0]), 'rb')
-            multiple_alignment_dict[coord[0]] = cpickle.load(handle)
-        except Exception, e:
-            sys.stderr.write("No alignment for %s, going on without it.\n" % coord[0])
-            sys.stderr.write(str(e) + "\n")
-#
-# Open output file and write first lines
-#
-try:
-    outfile = open(arguments.out, 'w')
-except IOError:
-    print "Connot open output file %s" % (arguments.out)
-
-#
-# write the header to the file
-#
-outfile.write('#siteID\tMIRZAscore\thybrid\tMIRZABranchLengthScoreFill\ttype\tprecise_type\n')
-
-if verbose is True:
-    print "Calculating MIRZA target quality... "
-
-
-sys.stderr.write("Collecting sequences\n")
-mRNA_sequences = [cor[-1] for cor in coords]
-mRNA_ids = ["%s,%s,%s" % (cor[0], cor[2], cor[3]) for cor in coords]
-assert len(set([cor[1] for cor in coords])) == 1
-miRNAseq = miRNAseqs[list(set([cor[1] for cor in coords]))[0]][:21]
-miRNAid = list(set([cor[1] for cor in coords]))[0]
-
-sys.stderr.write("Running MIRZA\n")
-results = calculate_mirza(mRNA_sequences, mRNA_ids, miRNAseq, miRNAid)
-sys.stderr.write("Collecting results\n")
-for key, group in it.groupby(results.splitlines(), lambda x: x == ""):
-    if not key:
-        proper_group = False
-        for line in group:
-            if line.startswith(">"):
-                mRNAid = line.split()[0][1:].split(",")[0]
-                beg = line.split()[0][1:].split(",")[1]
-                end = line.split()[0][1:].split(",")[2]
-                score = float(line.split()[-1])
-                proper_group = True
-            elif line.startswith("miRNA"):
-                mirhyb = line.split("\t")[1].split(" ")[0]
-            elif line.startswith("A L"):
-                hyb = line.split("\t")[1].rstrip()
-            elif line.startswith("mRNA"):
-                mrhyb = line.split("\t")[1].split(" ")[0]
-        if proper_group:
-            hybrids = [mirhyb, hyb, mrhyb]
-            mirseq, hybseq, mrhybseq, mrpos = getHybridVector(hybrids)
-            canonical, type_of_site = is_canonical([mirseq, hybseq, mrhybseq])
-            if arguments.onlymirza != 'yes':
-                try:
-                    mln_frag = multiple_alignment_dict[mRNAid]
-                    qd = getConservacy(phylotree=phylo_tree,
-                                       mrna_frag=mrhyb.replace("-", "")[::-1],
-                                       mrnaid=mRNAid,
-                                       mirna=mirhomologues,
-                                       mirname=miRNAid,
-                                       mln_dict=mln_frag,
-                                       ref_org=arguments.reforg,
-                                       threshold=arguments.thr,
-                                       seqlen=int(arguments.contextLen))
-                    qd = str(qd)
-                except KeyError, e:
-                    qd = "NA"
-                    sys.stderr.write("KeyError:  " + str(e) + "\n")
-                    sys.stderr.write("Trace:  "
-                                     + traceback.format_exc()
-                                     + "\n")
-                    # raise KeyError
-            else:
-                qd = "NA"
-            outtext = '%s,%s,%s,%s\t%f\t%s\t%s\t%s\t%s\n' % (mRNAid,
-                                                         miRNAid,
-                                                         beg,
-                                                         end,
-                                                         score,
-                                                         ":".join(hybrids),
-                                                         qd,
-                                                         "canonical" if canonical else "non-canonical",
-                                                         type_of_site)
-            outfile.write(outtext)
-
-outfile.close()
-clean()
+if __name__ == '__main__':
+    arguments, args = parser.parse_args()
+    verbose = arguments.verbose
+    if arguments.onlymirza not in ["yes", "no"]:
+        print "onlyMIRZA option has to be 'yes' or 'no'"
+        print parser.print_help()
+        sys.exit()
+    main(arguments, verbose)
