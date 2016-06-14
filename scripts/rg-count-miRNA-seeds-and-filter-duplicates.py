@@ -66,10 +66,13 @@ def main():
 
     data = []
     for mirid, mir in motifs.iteritems():
+        for_empty_data_mir = mirid
         if options.how == "ElMMo":
             # ElMMo definition of the seed
             regex = r"%s|%s" %(str(motifs[mirid][0:7].reverse_complement()),str(motifs[mirid][1:8].reverse_complement()))
             for seqid, seq in seqs.iteritems():
+                for_empty_data_id = seqid
+                for_empty_data_seq = seq[:options.context]
                 for match in re.finditer(regex, seq):
                     dist_to_boundary = calculate_distance_to_boundary(len(seq), match.span()[0])
                     if dist_to_boundary < 50:
@@ -95,6 +98,8 @@ def main():
             # TargetScan definition of the seed
             regex = r"%s|%s" %(str(motifs[mirid][1:8].reverse_complement()), str(motifs[mirid][1:7].reverse_complement()) + 'A')
             for seqid, seq in seqs.iteritems():
+                for_empty_data_id = seqid
+                for_empty_data_seq = seq[:options.context]
                 for match in re.finditer(regex, seq):
                     dist_to_boundary = calculate_distance_to_boundary(len(seq), match.span()[0])
                     if dist_to_boundary < 50:
@@ -120,6 +125,8 @@ def main():
             # 6-mer
             regex = r"%s" %(str(motifs[mirid][1:7].reverse_complement()))
             for seqid, seq in seqs.iteritems():
+                for_empty_data_id = seqid
+                for_empty_data_seq = seq[:options.context]
                 for match in re.finditer(regex, seq):
                     dist_to_boundary = calculate_distance_to_boundary(len(seq), match.span()[0])
                     if dist_to_boundary < 50:
@@ -143,6 +150,8 @@ def main():
                         continue
 
     names = ['id', 'mirna', 'beg', 'end', 'seq']
+    if not data:
+        data = [(for_empty_data_id, for_empty_data_mir, 60, 67, for_empty_data_seq)]
     data = pd.DataFrame(data, columns=names)
     data['newid'] = [i.split(options.split_by)[options.index_after_split] for i in data.id]
     ndf = data.drop_duplicates(cols=['newid', 'mirna', 'seq'])
