@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-
+Squeeze coordinates
 """
 
 __date_ = "2014-06-19"

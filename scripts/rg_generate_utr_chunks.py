@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Take utrs and generate fragments that can be fed into MIRZA
+Take UTRs and generate fragments by sliding window that can be fed into MIRZA
 """
 
 __date__ = "2015-06-15"

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Take mirza output and arrange it in proper way
+Take MIRZA output and arrange it in proper way
 """
 
 __date_ = "2014-09-16"

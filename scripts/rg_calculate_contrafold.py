@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Calculate accessibility of the site using CONTRAfold algorithm
+A `CONTRAfold <http://contra.stanford.edu/contrafold/>`_ algorithm is used to calculate accessibility of target site for miRNA.
 """
 
 __date__ = "2014-12-19"

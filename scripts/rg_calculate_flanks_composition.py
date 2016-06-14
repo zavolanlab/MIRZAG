@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Calculate flanks composition using provided coordinates
+Calculate flanks composition using provided coordinates.
 """
 
 __date__ = "2014-12-19"

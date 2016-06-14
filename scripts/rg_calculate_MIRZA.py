@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """
-Calculate MIRZA and MIRZA BLS for the coordinates provided
+Calculate MIRZA interaction energy and MIRZA-based Branch Length Score (conservation) for the provided
+coordinates of putative targets.
 """
 
 __date_ = "2014-05-29"

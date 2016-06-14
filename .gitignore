@@ -8,3 +8,6 @@
 !.gitignore
 !*.py
 !*.ini
+!*.rst
+!*.html
+!/docs/_build/html/

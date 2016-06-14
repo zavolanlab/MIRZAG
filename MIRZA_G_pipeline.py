@@ -1,3 +1,6 @@
+"""
+The main script launching MIRZA-G analysis pipeline
+"""
 import os
 import sys
 import shutil

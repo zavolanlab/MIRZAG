@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
 Calculate distance to the boundary based on provided
-coordinate file
+coordinates for targets.
 """
 
 __date__ = "2014-12-19"
