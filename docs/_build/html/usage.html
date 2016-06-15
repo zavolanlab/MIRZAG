@@ -31,8 +31,8 @@
 
   
     <link rel="top" title="MIRZA-G 1.0.0 documentation" href="index.html"/>
-        <link rel="next" title="Scripts" href="scripts.html"/>
-        <link rel="prev" title="Welcome to MIRZA-G’s documentation!" href="index.html"/> 
+        <link rel="next" title="Pipeline flow" href="scripts.html"/>
+        <link rel="prev" title="Instalation" href="installation.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -82,8 +82,9 @@
             
             
                 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Instalation</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="">Usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="scripts.html">Scripts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scripts.html">Pipeline flow</a></li>
 </ul>
 
             
@@ -130,21 +131,11 @@
             
   <div class="section" id="usage">
 <h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
+<p>The main script launching MIRZA-G analysis pipeline</p>
 <pre class="literal-block">
-usage: MIRZA-G [-h] [--modules [MODULES [MODULES ...]]] {run,clean} ...
+usage: MIRZA-G [-h] {run,clean} ...
 </pre>
 <dl class="docutils">
-<dt>Options:</dt>
-<dd><table class="first last docutils option-list" frame="void" rules="none">
-<col class="option" />
-<col class="description" />
-<tbody valign="top">
-<tr><td class="option-group">
-<kbd><span class="option">--modules</span></kbd></td>
-<td>A list of modules to load (if HPC or environment requires)</td></tr>
-</tbody>
-</table>
-</dd>
 <dt>Sub-commands:</dt>
 <dd><dl class="first last docutils">
 <dt><strong>run</strong></dt>
@@ -152,6 +143,7 @@ usage: MIRZA-G [-h] [--modules [MODULES [MODULES ...]]] {run,clean} ...
 <pre class="literal-block">
 usage: MIRZA-G run [-h] [-v] --config CONFIG [--name-suffix NAME_SUFFIX]
                    [--protocol {seed,scan}] [--calulate-bls]
+                   [--modules [MODULES [MODULES ...]]]
 </pre>
 <dl class="last docutils">
 <dt>Options:</dt>
@@ -180,6 +172,9 @@ usage: MIRZA-G run [-h] [-v] --config CONFIG [--name-suffix NAME_SUFFIX]
 <kbd><span class="option">--calulate-bls=False</span></kbd></td>
 </tr>
 <tr><td>&nbsp;</td><td>NOT AVAILABLE: Calculate Branch Length Score (conservation)</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--modules</span></kbd></td>
+<td>A list of modules to load (if HPC or environment requires)</td></tr>
 </tbody>
 </table>
 </dd>
@@ -221,10 +216,10 @@ usage: MIRZA-G clean [-h] [-v] [-y]
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="scripts.html" class="btn btn-neutral float-right" title="Scripts" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="scripts.html" class="btn btn-neutral float-right" title="Pipeline flow" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="index.html" class="btn btn-neutral" title="Welcome to MIRZA-G’s documentation!" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="installation.html" class="btn btn-neutral" title="Instalation" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
