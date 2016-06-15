@@ -82,7 +82,16 @@
             
             
                 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="">Instalation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Instalation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#dependencies">Dependencies</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#mirza">MIRZA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#contrafold">CONTRAfold</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#jobber">Jobber</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#python">Python</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="scripts.html">Pipeline flow</a></li>
 </ul>
@@ -131,6 +140,93 @@
             
   <div class="section" id="instalation">
 <h1>Instalation<a class="headerlink" href="#instalation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="mirza">
+<h3>MIRZA<a class="headerlink" href="#mirza" title="Permalink to this headline">¶</a></h3>
+<p>Download and install <a class="reference external" href="http://www.clipz.unibas.ch/index.php?r=tools/mirza/Submission/index">MIRZA</a>.
+It is statically compiled so you do not need to compile it again</p>
+</div>
+<div class="section" id="contrafold">
+<h3>CONTRAfold<a class="headerlink" href="#contrafold" title="Permalink to this headline">¶</a></h3>
+<p>Download and install <a class="reference external" href="http://contra.stanford.edu/contrafold/download.html">CONTRAfold</a>.
+It might be that you experience an error when compiling CONTRAfold. Something like this:</p>
+<div class="highlight-bash"><div class="highlight"><pre>In file included from LBFGS.hpp:52:0,
+                 from InnerOptimizationWrapper.hpp:12,
+                 from OptimizationWrapper.hpp:12,
+                 from Contrafold.cpp:16:
+LBFGS.ipp: In instantiation of ‘Real LBFGS&lt;Real&gt;::Minimize<span class="o">(</span>std::vector&lt;T&gt;<span class="p">&amp;</span><span class="o">)</span> <span class="o">[</span>with <span class="nv">Real</span> <span class="o">=</span> double<span class="o">]</span>’:
+OptimizationWrapper.ipp:260:9:   required from ‘void OptimizationWrapper&lt;RealT&gt;::LearnHyperparameters<span class="o">(</span>std::vector&lt;int&gt;, std::vector&lt;T&gt;<span class="p">&amp;</span><span class="o">)</span> <span class="o">[</span>with <span class="nv">RealT</span> <span class="o">=</span> double<span class="o">]</span>’
+Contrafold.cpp:451:9:   required from ‘void RunTrainingMode<span class="o">(</span>const Options<span class="p">&amp;</span>, const std::vector&lt;FileDescription&gt;<span class="p">&amp;</span><span class="o">)</span> <span class="o">[</span>with <span class="nv">RealT</span> <span class="o">=</span> double<span class="o">]</span>’
+Contrafold.cpp:68:54:   required from here
+LBFGS.ipp:112:105: error: ‘DoLineSearch’ was not declared in this scope, and no declarations were found by argument-dependent lookup at the point of instantiation <span class="o">[</span>-fpermissive<span class="o">]</span>
+LBFGS.ipp:112:105: note: declarations in dependent base ‘LineSearch&lt;double&gt;’ are not found by unqualified lookup
+LBFGS.ipp:112:105: note: use ‘this-&gt;DoLineSearch’ instead
+make: *** <span class="o">[</span>Contrafold.o<span class="o">]</span> Error 1
+</pre></div>
+</div>
+<p>To fix it:</p>
+<ul class="simple">
+<li>add -fpermissive flag to CSXXFLAGS in Makefile:</li>
+</ul>
+<div class="highlight-c"><div class="highlight"><pre><span class="n">CXXFLAGS</span> <span class="o">=</span> <span class="o">-</span><span class="n">O3</span> <span class="o">-</span><span class="n">DNDEBUG</span> <span class="o">-</span><span class="n">W</span> <span class="o">-</span><span class="n">pipe</span> <span class="o">-</span><span class="n">Wundef</span> <span class="o">-</span><span class="n">Winline</span> <span class="o">--</span><span class="n">param</span> <span class="n">large</span><span class="o">-</span><span class="n">function</span><span class="o">-</span><span class="n">growth</span><span class="o">=</span><span class="mi">100000</span> <span class="o">-</span><span class="n">Wall</span> <span class="o">-</span><span class="n">fpermissive</span>
+
+<span class="n">instead</span> <span class="n">of</span>
+<span class="n">CXXFLAGS</span> <span class="o">=</span> <span class="o">-</span><span class="n">O3</span> <span class="o">-</span><span class="n">DNDEBUG</span> <span class="o">-</span><span class="n">W</span> <span class="o">-</span><span class="n">pipe</span> <span class="o">-</span><span class="n">Wundef</span> <span class="o">-</span><span class="n">Winline</span> <span class="o">--</span><span class="n">param</span> <span class="n">large</span><span class="o">-</span><span class="n">function</span><span class="o">-</span><span class="n">growth</span><span class="o">=</span><span class="mi">100000</span> <span class="o">-</span><span class="n">Wall</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>add in Utilities.hpp:</li>
+</ul>
+<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include &lt;limits.h&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="jobber">
+<h3>Jobber<a class="headerlink" href="#jobber" title="Permalink to this headline">¶</a></h3>
+<p>Download and setup Jobber python library for workflow managment.</p>
+<div class="highlight-bash"><div class="highlight"><pre>pip install Jobber
+</pre></div>
+</div>
+<p>After installation start the Jobber daemon:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>nohup jobber_server &gt; jobber.log 2&gt;<span class="p">&amp;</span><span class="m">1</span> <span class="p">&amp;</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>If you installed Jobber as user you might not have an access to the jobber_server. By
+default the binary location is $HOME/.local/bin and you have to export it in bash:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ export PATH=&quot;$HOME/.local/bin:$PATH&quot;
+</pre></div>
+</div>
+<p>or add this statement to .bashrc file.</p>
+<p class="last">jobber_server produces ~/.jobber/jobber.pid file that indicates whether the Jobber is already
+running. If the file exists one cannot start new instance of the jobber_server. This file is
+not clean when jobber_server is killed - only when it was stopped with stop command. Thus,
+after some crash one have to remove this file in order to start jobber_server again.</p>
+</div>
+<p>This will automatically create a ~/.jobber and ~/jobber/log directories and
+it will put there config.py and executers.py files. Look at them and adjust
+according to your needs.</p>
+</div>
+<div class="section" id="python">
+<h3>Python<a class="headerlink" href="#python" title="Permalink to this headline">¶</a></h3>
+<dl class="docutils">
+<dt>Install python modules:</dt>
+<dd><ul class="first last simple">
+<li>Jobber (see upper paragraph)</li>
+<li>drmaa (if you are going to submit it to the cluster)</li>
+<li>statsmodels</li>
+<li>pandas</li>
+<li>BioPython</li>
+<li>dendropy</li>
+<li>numpy</li>
+<li>scipy</li>
+</ul>
+</dd>
+</dl>
+</div>
+</div>
 </div>
 
 
