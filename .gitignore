@@ -1,6 +1,6 @@
 # Ignore everything
 *
-/data
+/CDS_alignments/
 
 # But not these files...
 !*/

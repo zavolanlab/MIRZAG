@@ -83,7 +83,11 @@
             
                 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Instalation</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Usage</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#basic-usage">Basic usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#preparing-config-file">Preparing config file</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="scripts.html">Pipeline flow</a></li>
 </ul>
 
@@ -131,6 +135,13 @@
             
   <div class="section" id="usage">
 <h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="basic-usage">
+<h2>Basic usage<a class="headerlink" href="#basic-usage" title="Permalink to this headline">¶</a></h2>
+<p>Command to launch the pipeline is as follows:</p>
+<div class="highlight-bash"><div class="highlight"><pre>python MIRZA_G_pipeline.py run --config congig.ini --name-suffix name_of_the_run
+</pre></div>
+</div>
+<p>All parameters for the script:</p>
 <p>The main script launching MIRZA-G analysis pipeline</p>
 <pre class="literal-block">
 usage: MIRZA-G [-h] {run,clean} ...
@@ -207,6 +218,49 @@ usage: MIRZA-G clean [-h] [-v] [-y]
 </dl>
 </dd>
 </dl>
+</div>
+<div class="section" id="preparing-config-file">
+<h2>Preparing config file<a class="headerlink" href="#preparing-config-file" title="Permalink to this headline">¶</a></h2>
+<p>Copy config_example.ini from MIRZA-G directory to your working directory (directory
+where you want to perform calculation, WD):</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nb">cd </span>Your/Working/Direcory
+cp Path/To/MIRZA-G/config_example.ini config.ini
+</pre></div>
+</div>
+<dl class="docutils">
+<dt>Set all the necessary paths in your config.ini file as indicated in the comments inside the file. The most importand are:</dt>
+<dd><ul class="first last simple">
+<li><strong>motifs</strong>: &#8220;Path/To/miRNAs.fa&#8221; - abs path to an input fasta file with mi/siRNA sequences of length 21 or more</li>
+<li><strong>seqs</strong>: &#8220;Path/To/MIRZA-G/data/UTR_Sequences.fa&#8221; - abs path to a fasta file with the UTR sequences from which the coordinate file will be generated (you can use 3&#8217;UTR sequences in the
+MIRZA-G/data directory, for this file there are also alignments for conservation precalculated)</li>
+<li><strong>mirza_binary</strong>: &#8220;MIRZA&#8221; - path to MIRZA binary (or how you invoke it in the bash)</li>
+<li><strong>contrafold_binary</strong>: &#8220;contrafold&#8221; - path to CONTRAfold binary (or how you invoke in the bash)</li>
+</ul>
+</dd>
+<dt>Models paths:</dt>
+<dd><ul class="first last simple">
+<li><strong>model_with_bls</strong>: &#8220;Path/To/MIRZA-G/data/glm-with-bls.bin&#8221; - abs path to the model with BLS (you can find it in the pipeline/data directory)</li>
+<li><strong>model_without_bls</strong>: &#8220;Path/To/MIRZA-G/data/glm-without-bls.bin&#8221; - same as before</li>
+</ul>
+</dd>
+<dt>Additionally when you would like to calculate with evolutionary conservation you have to make sure that the variable run_only_MIRZA in CalculateMIRZA task is set to “no” instead of “yes” and that you provide proper paths with aligned UTRs and evolutionary tree:</dt>
+<dd><ul class="first last">
+<li><p class="first"><strong>phylogenetic_tree</strong>: &#8220;Path/To/MIRZA-G/data/human_tree.nh&#8221; - abspath to provided phylogenetic tree</p>
+</li>
+<li><dl class="first docutils">
+<dt><strong>alignment_directory</strong>: &#8220;Path/To/MIRZA-G/data/HumanAlignments/&#8221; - abspath to provided human alignments directory. If you downloaded package from CLIPz website</dt>
+<dd><p class="first last">this directory is already in the MIRZA-G directory. If you downloaded from GitHub you have to download it additionally.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+<p>If you would like to run it on cluster follow instructions in the configuration file and ask your admin what parameters you need to set
+up before (like DRMAA path, modules necessary, queues names etc.). All these parameters can be set up in config.ini.</p>
+<p>To run it locally it takes ~70 to 90 seconds for one miRNA without conservation calculation and ~170 seconds with calculation (This
+might be substantial amount of time (up to half an hour per miRNA) for worse processors).</p>
+</div>
 </div>
 
 
