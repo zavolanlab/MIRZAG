@@ -1,0 +1,21 @@
+                 Generalized Linear Model Regression Results                  
+==============================================================================
+Dep. Variable:                   sign   No. Observations:                 2563
+Model:                            GLM   Df Residuals:                     2556
+Model Family:                Binomial   Df Model:                            6
+Link Function:                  logit   Scale:                             1.0
+Method:                          IRLS   Log-Likelihood:                -1472.9
+Date:                Sat, 24 May 2014   Deviance:                       2945.8
+Time:                        10:02:08   Pearson chi2:                 2.68e+03
+No. Iterations:                     5                                         
+==============================================================================================
+                                 coef    std err          t      P>|t|      [95.0% Conf. Int.]
+----------------------------------------------------------------------------------------------
+Intercept                     -2.8222      0.453     -6.236      0.000        -3.709    -1.935
+MIRZABranchLengthScoreFill     2.6661      0.268      9.940      0.000         2.140     3.192
+MIRZAscore                     0.1412      0.042      3.324      0.001         0.058     0.225
+flanksU                        6.9031      0.742      9.300      0.000         5.448     8.358
+flanksG                        2.8181      0.952      2.960      0.003         0.952     4.684
+ContraScoreTargetSite          0.1708      0.026      6.489      0.000         0.119     0.222
+distToBoundary                -0.0006   8.41e-05     -6.941      0.000        -0.001    -0.000
+==============================================================================================
