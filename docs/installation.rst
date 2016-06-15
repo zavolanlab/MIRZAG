@@ -65,6 +65,7 @@ After installation start the Jobber daemon:
 
     $ nohup jobber_server > jobber.log 2>&1 &
 
+
 .. note::
 
     If you installed Jobber as user you might not have an access to the jobber_server. By
@@ -87,6 +88,33 @@ This will automatically create a ~/.jobber and ~/jobber/log directories and
 it will put there config.py and executers.py files. Look at them and adjust
 according to your needs.
 
+This should create a jobber.sqlite file next to config.py where jobs will be stored (all in ~/.jobber).
+Now you can create pipelines that will be managed with a python script.
+
+
+To stop the jobber daemon, run following command:
+
+.. code-block:: bash
+
+    $ jobber_server -stop
+
+You can watch and control your jobs and pipelines present in the database using simple we interface.
+To launch it type:
+
+.. code-block:: bash
+
+    $ jobber_web
+
+or
+
+.. code-block:: bash
+
+    $ jobber_web --ip Your.IP.addres --port YourPort
+
+.. note::
+    If you would like to run MIRZA-G pipeline locally without DRMAA change executer
+    in config.py file from "drmaa" to "local"
+
 Python
 ------
 
@@ -100,3 +128,26 @@ Install python modules:
  * numpy
  * scipy
 
+
+Download
+========
+
+The pipeline is available as a git repository on GitHub:
+
+.. code-block:: bash
+
+    git clone https://github.com/guma44/MIRZAG.git
+
+By default we provide 3'UTR sequences without alignments. If you would like run
+MIRZA-G with conservation you need to download alignments to this particular 3'UTR set.
+
+.. code-block:: bash
+
+    wget http://www.clipz.unibas.ch/public/mirza/MIRZAG_alignments.tar.gz
+
+
+You can also download whole package including alignments from out website:
+
+.. code-block:: bash
+
+    wget http://www.clipz.unibas.ch/public/mirza/pipeline_MIRZAG.tar.gz
