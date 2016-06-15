@@ -12,3 +12,4 @@ six==1.10.0
 snowballstemmer==1.2.1
 Sphinx==1.4.4
 sphinx-argparse==0.1.15
+configobj==5.0.6
