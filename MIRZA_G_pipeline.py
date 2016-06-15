@@ -40,7 +40,7 @@ run_parser.add_argument("--calulate-bls",
                     action="store_true",
                     default=False,
                     help="NOT AVAILABLE: Calculate Branch Length Score (conservation)")
-parser.add_argument("--modules",
+run_parser.add_argument("--modules",
                     dest="modules",
                     nargs="*",
                     help="A list of modules to load (if HPC or environment requires)")
