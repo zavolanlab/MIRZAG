@@ -83,7 +83,7 @@
                 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Instalation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Pipeline flow</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Pipeline flow</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#prepare-mirnas-for-pipeline">1. Prepare miRNAs for pipeline</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#chunk-utrs">2. Chunk UTRs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#generate-mirna-expressions">3. Generate miRNA expressions</a></li>
@@ -126,7 +126,7 @@
         <div class="rst-content">
           
 
-
+ 
 
 
 
@@ -156,10 +156,10 @@
 check if it is 21 nucleotide long and if not eliminate it. It
 also replaces all u or U into T. In the same time it splits miRNAs
 into separate files.</p>
-<pre class="literal-block">
-usage: rg_prepare_mirnas_for_mirza_and_split [-h] [-v] --input INPUT
-                                             [--output-dir OUTPUT_DIR]
-</pre>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">rg_prepare_mirnas_for_mirza_and_split</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">v</span><span class="p">]</span> <span class="o">--</span><span class="nb">input</span> <span class="n">INPUT</span>
+                                             <span class="p">[</span><span class="o">--</span><span class="n">output</span><span class="o">-</span><span class="nb">dir</span> <span class="n">OUTPUT_DIR</span><span class="p">]</span>
+</pre></div>
+</div>
 <dl class="docutils">
 <dt>Options:</dt>
 <dd><table class="first last docutils option-list" frame="void" rules="none">
@@ -185,12 +185,12 @@ usage: rg_prepare_mirnas_for_mirza_and_split [-h] [-v] --input INPUT
 <div class="section" id="chunk-utrs">
 <h2>2. Chunk UTRs<a class="headerlink" href="#chunk-utrs" title="Permalink to this headline">¶</a></h2>
 <p>Take UTRs and generate fragments by sliding window that can be fed into MIRZA</p>
-<pre class="literal-block">
-usage: rg_generate_utr_chunks [-h] [-v] [--input INPUT] --output-dir
-                              OUTPUT_DIR [--part-size PART_SIZE]
-                              [--window-size WINDOW_SIZE]
-                              [--slide-size SLIDE_SIZE]
-</pre>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">rg_generate_utr_chunks</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">v</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="nb">input</span> <span class="n">INPUT</span><span class="p">]</span> <span class="o">--</span><span class="n">output</span><span class="o">-</span><span class="nb">dir</span>
+                              <span class="n">OUTPUT_DIR</span> <span class="p">[</span><span class="o">--</span><span class="n">part</span><span class="o">-</span><span class="n">size</span> <span class="n">PART_SIZE</span><span class="p">]</span>
+                              <span class="p">[</span><span class="o">--</span><span class="n">window</span><span class="o">-</span><span class="n">size</span> <span class="n">WINDOW_SIZE</span><span class="p">]</span>
+                              <span class="p">[</span><span class="o">--</span><span class="n">slide</span><span class="o">-</span><span class="n">size</span> <span class="n">SLIDE_SIZE</span><span class="p">]</span>
+</pre></div>
+</div>
 <dl class="docutils">
 <dt>Options:</dt>
 <dd><table class="first last docutils option-list" frame="void" rules="none">
@@ -202,7 +202,7 @@ usage: rg_generate_utr_chunks [-h] [-v] [--input INPUT] --output-dir
 </tr>
 <tr><td>&nbsp;</td><td>Be loud!</td></tr>
 <tr><td class="option-group" colspan="2">
-<kbd><span class="option">--input=&lt;open file '&lt;stdin&gt;', mode 'r' at 0x7fe10f8200c0&gt;</span></kbd></td>
+<kbd><span class="option">--input=&lt;open file '&lt;stdin&gt;', mode 'r' at 0x7f4399ea90c0&gt;</span></kbd></td>
 </tr>
 <tr><td>&nbsp;</td><td>Input file in fasta format. Defaults to sys.stdin.</td></tr>
 <tr><td class="option-group">
@@ -230,7 +230,7 @@ usage: rg_generate_utr_chunks [-h] [-v] [--input INPUT] --output-dir
 <p>Generate expressions of miRNAs. This file is required by MIRZA and is composed just from the
 miRNA ID and its expression. Here we set up expression for each miRNA to 1.</p>
 <p>There is no special script dedicated to this function. It is just the bash command:</p>
-<div class="highlight-bash"><div class="highlight"><pre>cat input <span class="p">|</span> ruby -ne <span class="s1">&#39;puts &quot;#{$_.rstrip()[1..-1]}\t1&quot; if $_.start_with?(&quot;&gt;&quot;)&#39;</span> &gt; output
+<div class="highlight-bash"><div class="highlight"><pre><span></span>cat input <span class="p">|</span> ruby -ne <span class="s1">&#39;puts &quot;#{$_.rstrip()[1..-1]}\t1&quot; if $_.start_with?(&quot;&gt;&quot;)&#39;</span> &gt; output
 </pre></div>
 </div>
 </div>
@@ -239,10 +239,10 @@ miRNA ID and its expression. Here we set up expression for each miRNA to 1.</p>
 <p>If the option &#8220;scan&#8221; as a miRNA target search is chosen putative targets are selected based on MIRZA interaction
 energy. Thus, this is the  part of the pipeline scans the 3&#8217;UTRs with MIRZA to find it.</p>
 <p>This script generates the jobs of the pipeline that will do the analysis on the split files.</p>
-<pre class="literal-block">
-usage: run_mirza_scan [-h] [-v] --config CONFIG --group-id GROUP_ID
-                      --input-dir INPUT_DIR --working-dir WORKING_DIR
-</pre>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">run_mirza_scan</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">v</span><span class="p">]</span> <span class="o">--</span><span class="n">config</span> <span class="n">CONFIG</span> <span class="o">--</span><span class="n">group</span><span class="o">-</span><span class="nb">id</span> <span class="n">GROUP_ID</span>
+                      <span class="o">--</span><span class="nb">input</span><span class="o">-</span><span class="nb">dir</span> <span class="n">INPUT_DIR</span> <span class="o">--</span><span class="n">working</span><span class="o">-</span><span class="nb">dir</span> <span class="n">WORKING_DIR</span>
+</pre></div>
+</div>
 <dl class="docutils">
 <dt>Options:</dt>
 <dd><table class="first last docutils option-list" frame="void" rules="none">
@@ -273,16 +273,16 @@ usage: run_mirza_scan [-h] [-v] --config CONFIG --group-id GROUP_ID
 <h3>I. Calculate coordinates with MIRZA<a class="headerlink" href="#i-calculate-coordinates-with-mirza" title="Permalink to this headline">¶</a></h3>
 <p>Here the MIRZA algorithm is used to calculate the energy between miRNA and the 3&#8217;UTR fragments generated
 before. MIRZA is launched from the command:</p>
-<div class="highlight-bash"><div class="highlight"><pre>MIRZA expressions.tab mrnas.fa mirnas.fa <span class="m">50</span> noupdate
+<div class="highlight-bash"><div class="highlight"><pre><span></span>MIRZA expressions.tab mrnas.fa mirnas.fa <span class="m">50</span> noupdate
 </pre></div>
 </div>
 <p>And the result is piped to the analysis script:</p>
 <p>Take MIRZA output and arrange it in proper way</p>
-<pre class="literal-block">
-usage: rg_extract_data_from_mirza_output [-h] [-v] [--output OUTPUT] --seqs
-                                         SEQS --threshold THRESHOLD
-                                         [--context CONTEXT]
-</pre>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">rg_extract_data_from_mirza_output</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">v</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">output</span> <span class="n">OUTPUT</span><span class="p">]</span> <span class="o">--</span><span class="n">seqs</span>
+                                         <span class="n">SEQS</span> <span class="o">--</span><span class="n">threshold</span> <span class="n">THRESHOLD</span>
+                                         <span class="p">[</span><span class="o">--</span><span class="n">context</span> <span class="n">CONTEXT</span><span class="p">]</span>
+</pre></div>
+</div>
 <dl class="docutils">
 <dt>Options:</dt>
 <dd><table class="first last docutils option-list" frame="void" rules="none">
@@ -315,11 +315,11 @@ usage: rg_extract_data_from_mirza_output [-h] [-v] [--output OUTPUT] --seqs
 <p>The results are merged with bash command and duplicate results resulting from eg.
 overlapping 3&#8217;UTR fragments or transcripts from the same gene.</p>
 <p>Filter duplicates in coordinates by id, miRNA and sequence</p>
-<pre class="literal-block">
-usage: rg_filter_duplicates_from_scan [-h] [-v] --coords COORDS --split-by
-                                      SPLIT_BY --index-after-split
-                                      INDEX_AFTER_SPLIT --output OUTPUT
-</pre>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">rg_filter_duplicates_from_scan</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">v</span><span class="p">]</span> <span class="o">--</span><span class="n">coords</span> <span class="n">COORDS</span> <span class="o">--</span><span class="n">split</span><span class="o">-</span><span class="n">by</span>
+                                      <span class="n">SPLIT_BY</span> <span class="o">--</span><span class="n">index</span><span class="o">-</span><span class="n">after</span><span class="o">-</span><span class="n">split</span>
+                                      <span class="n">INDEX_AFTER_SPLIT</span> <span class="o">--</span><span class="n">output</span> <span class="n">OUTPUT</span>
+</pre></div>
+</div>
 <dl class="docutils">
 <dt>Options:</dt>
 <dd><table class="first last docutils option-list" frame="void" rules="none">
@@ -354,16 +354,16 @@ usage: rg_filter_duplicates_from_scan [-h] [-v] --coords COORDS --split-by
 <p>This part is launched if the &#8220;seed&#8221; options is chosen when starting the pipeline. The putative
 miRNA targets are found by simple seed match.</p>
 <p>Count miRNA seed in the provided sequences according to chosen definition</p>
-<pre class="literal-block">
-usage: rg_count_miRNA_seeds_and_filter_duplicates [-h] [-v] [--motifs MOTIFS]
-                                                  [--seqs SEQS]
-                                                  [--how {ElMMo,TargetScan,6-mer}]
-                                                  [--output OUTPUT]
-                                                  [--context CONTEXT]
-                                                  --split-by SPLIT_BY
-                                                  --index-after-split
-                                                  INDEX_AFTER_SPLIT
-</pre>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">rg_count_miRNA_seeds_and_filter_duplicates</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">v</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">motifs</span> <span class="n">MOTIFS</span><span class="p">]</span>
+                                                  <span class="p">[</span><span class="o">--</span><span class="n">seqs</span> <span class="n">SEQS</span><span class="p">]</span>
+                                                  <span class="p">[</span><span class="o">--</span><span class="n">how</span> <span class="p">{</span><span class="n">ElMMo</span><span class="p">,</span><span class="n">TargetScan</span><span class="p">,</span><span class="mi">6</span><span class="o">-</span><span class="n">mer</span><span class="p">}]</span>
+                                                  <span class="p">[</span><span class="o">--</span><span class="n">output</span> <span class="n">OUTPUT</span><span class="p">]</span>
+                                                  <span class="p">[</span><span class="o">--</span><span class="n">context</span> <span class="n">CONTEXT</span><span class="p">]</span>
+                                                  <span class="o">--</span><span class="n">split</span><span class="o">-</span><span class="n">by</span> <span class="n">SPLIT_BY</span>
+                                                  <span class="o">--</span><span class="n">index</span><span class="o">-</span><span class="n">after</span><span class="o">-</span><span class="n">split</span>
+                                                  <span class="n">INDEX_AFTER_SPLIT</span>
+</pre></div>
+</div>
 <dl class="docutils">
 <dt>Options:</dt>
 <dd><table class="first last docutils option-list" frame="void" rules="none">
@@ -412,13 +412,13 @@ usage: rg_count_miRNA_seeds_and_filter_duplicates [-h] [-v] [--motifs MOTIFS]
 <h3>I. Calculate MIRZA<a class="headerlink" href="#i-calculate-mirza" title="Permalink to this headline">¶</a></h3>
 <p>Calculate MIRZA interaction energy and MIRZA-based Branch Length Score (conservation) for the provided
 coordinates of putative targets.</p>
-<pre class="literal-block">
-usage: rg_calculate_MIRZA [-h] [-v] [--onlyMIRZA {yes,no}] [--seq SEQ]
-                          [--out OUT] [--coords COORDS] [--motifs MOTIFS]
-                          [--tree TREE] [--mln-dir MLN_DIR] [--threshold THR]
-                          [--contextLen CONTEXTLEN] [--mirzabin MIRZABIN]
-                          [--reforg REFORG]
-</pre>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">rg_calculate_MIRZA</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">v</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">onlyMIRZA</span> <span class="p">{</span><span class="n">yes</span><span class="p">,</span><span class="n">no</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">seq</span> <span class="n">SEQ</span><span class="p">]</span>
+                          <span class="p">[</span><span class="o">--</span><span class="n">out</span> <span class="n">OUT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">coords</span> <span class="n">COORDS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">motifs</span> <span class="n">MOTIFS</span><span class="p">]</span>
+                          <span class="p">[</span><span class="o">--</span><span class="n">tree</span> <span class="n">TREE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">mln</span><span class="o">-</span><span class="nb">dir</span> <span class="n">MLN_DIR</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">threshold</span> <span class="n">THR</span><span class="p">]</span>
+                          <span class="p">[</span><span class="o">--</span><span class="n">contextLen</span> <span class="n">CONTEXTLEN</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">mirzabin</span> <span class="n">MIRZABIN</span><span class="p">]</span>
+                          <span class="p">[</span><span class="o">--</span><span class="n">reforg</span> <span class="n">REFORG</span><span class="p">]</span>
+</pre></div>
+</div>
 <dl class="docutils">
 <dt>Options:</dt>
 <dd><table class="first last docutils option-list" frame="void" rules="none">
@@ -476,12 +476,12 @@ usage: rg_calculate_MIRZA [-h] [-v] [--onlyMIRZA {yes,no}] [--seq SEQ]
 <div class="section" id="ii-calculate-accessibility-with-contrafold">
 <h3>II. Calculate accessibility with CONTRAfold<a class="headerlink" href="#ii-calculate-accessibility-with-contrafold" title="Permalink to this headline">¶</a></h3>
 <p>A <a class="reference external" href="http://contra.stanford.edu/contrafold/">CONTRAfold</a> algorithm is used to calculate accessibility of target site for miRNA.</p>
-<pre class="literal-block">
-usage: rg_calculate_contrafold [-h] [-v] [--seq SEQ] [--out OUT]
-                               [--coords COORDS] [--contextLen_L CONTEXTLEN_L]
-                               [--contextLen_U CONTEXTLEN_U]
-                               [--context CONTEXT] [--contrabin CONTRABIN]
-</pre>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">rg_calculate_contrafold</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">v</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">seq</span> <span class="n">SEQ</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">out</span> <span class="n">OUT</span><span class="p">]</span>
+                               <span class="p">[</span><span class="o">--</span><span class="n">coords</span> <span class="n">COORDS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">contextLen_L</span> <span class="n">CONTEXTLEN_L</span><span class="p">]</span>
+                               <span class="p">[</span><span class="o">--</span><span class="n">contextLen_U</span> <span class="n">CONTEXTLEN_U</span><span class="p">]</span>
+                               <span class="p">[</span><span class="o">--</span><span class="n">context</span> <span class="n">CONTEXT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">contrabin</span> <span class="n">CONTRABIN</span><span class="p">]</span>
+</pre></div>
+</div>
 <dl class="docutils">
 <dt>Options:</dt>
 <dd><table class="first last docutils option-list" frame="void" rules="none">
@@ -526,11 +526,11 @@ usage: rg_calculate_contrafold [-h] [-v] [--seq SEQ] [--out OUT]
 <div class="section" id="iii-calculate-flanks-composition">
 <h3>III. Calculate flanks composition<a class="headerlink" href="#iii-calculate-flanks-composition" title="Permalink to this headline">¶</a></h3>
 <p>Calculate flanks composition using provided coordinates.</p>
-<pre class="literal-block">
-usage: rg_calculate_flanks_composition [-h] [-v] [--seq SEQ] [--out OUT]
-                                       [--coords COORDS]
-                                       [--contextLen CONTEXTLEN]
-</pre>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">rg_calculate_flanks_composition</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">v</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">seq</span> <span class="n">SEQ</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">out</span> <span class="n">OUT</span><span class="p">]</span>
+                                       <span class="p">[</span><span class="o">--</span><span class="n">coords</span> <span class="n">COORDS</span><span class="p">]</span>
+                                       <span class="p">[</span><span class="o">--</span><span class="n">contextLen</span> <span class="n">CONTEXTLEN</span><span class="p">]</span>
+</pre></div>
+</div>
 <dl class="docutils">
 <dt>Options:</dt>
 <dd><table class="first last docutils option-list" frame="void" rules="none">
@@ -565,10 +565,10 @@ usage: rg_calculate_flanks_composition [-h] [-v] [--seq SEQ] [--out OUT]
 <h3>IV. Calculate distance to the boundary<a class="headerlink" href="#iv-calculate-distance-to-the-boundary" title="Permalink to this headline">¶</a></h3>
 <p>Calculate distance to the boundary based on provided
 coordinates for targets.</p>
-<pre class="literal-block">
-usage: rg_calculate_distance [-h] [-v] [--seq SEQ] [--out OUT]
-                             [--coords COORDS] [--contextLen CONTEXTLEN]
-</pre>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">rg_calculate_distance</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">v</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">seq</span> <span class="n">SEQ</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">out</span> <span class="n">OUT</span><span class="p">]</span>
+                             <span class="p">[</span><span class="o">--</span><span class="n">coords</span> <span class="n">COORDS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">contextLen</span> <span class="n">CONTEXTLEN</span><span class="p">]</span>
+</pre></div>
+</div>
 <dl class="docutils">
 <dt>Options:</dt>
 <dd><table class="first last docutils option-list" frame="void" rules="none">
@@ -603,13 +603,13 @@ usage: rg_calculate_distance [-h] [-v] [--seq SEQ] [--out OUT]
 <div class="section" id="merge-and-add-probabilities">
 <h2>6. Merge and add probabilities<a class="headerlink" href="#merge-and-add-probabilities" title="Permalink to this headline">¶</a></h2>
 <p>Merge all results into one features table</p>
-<pre class="literal-block">
-usage: rg_merge_results_add_probability_and_calculate_per_gene_score
-       [-h] [-v] [--inputs INPUTS] [--coords COORDS] [--model-bls MODEL_BLS]
-       [--model-nobls MODEL_NOBLS] [--output OUTPUT] [--only-mirza {yes,no}]
-       [--threshold THRESHOLD] [--split-by SPLIT_BY] [--column COLUMN]
-       [--name NAME]
-</pre>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">rg_merge_results_add_probability_and_calculate_per_gene_score</span>
+       <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">v</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">inputs</span> <span class="n">INPUTS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">coords</span> <span class="n">COORDS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">model</span><span class="o">-</span><span class="n">bls</span> <span class="n">MODEL_BLS</span><span class="p">]</span>
+       <span class="p">[</span><span class="o">--</span><span class="n">model</span><span class="o">-</span><span class="n">nobls</span> <span class="n">MODEL_NOBLS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">output</span> <span class="n">OUTPUT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">only</span><span class="o">-</span><span class="n">mirza</span> <span class="p">{</span><span class="n">yes</span><span class="p">,</span><span class="n">no</span><span class="p">}]</span>
+       <span class="p">[</span><span class="o">--</span><span class="n">threshold</span> <span class="n">THRESHOLD</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">split</span><span class="o">-</span><span class="n">by</span> <span class="n">SPLIT_BY</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">column</span> <span class="n">COLUMN</span><span class="p">]</span>
+       <span class="p">[</span><span class="o">--</span><span class="n">name</span> <span class="n">NAME</span><span class="p">]</span>
+</pre></div>
+</div>
 <dl class="docutils">
 <dt>Options:</dt>
 <dd><table class="first last docutils option-list" frame="void" rules="none">
@@ -663,7 +663,7 @@ split it and take only one, defaults to NONE</td></tr>
 <div class="section" id="collect-results">
 <h2>7. Collect results<a class="headerlink" href="#collect-results" title="Permalink to this headline">¶</a></h2>
 <p>In the end all the results are collected with bash command:</p>
-<div class="highlight-bash"><div class="highlight"><pre>zcat output_dir/<span class="se">\*</span>.score &gt; cwd/mirza_g_results_protocol.tab
+<div class="highlight-bash"><div class="highlight"><pre><span></span>zcat output_dir/<span class="se">\*</span>.score &gt; cwd/mirza_g_results_protocol.tab
 </pre></div>
 </div>
 </div>

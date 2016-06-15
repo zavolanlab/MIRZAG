@@ -83,7 +83,7 @@
             
                 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Instalation</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Usage</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Usage</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#basic-usage">Basic usage</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#preparing-config-file">Preparing config file</a></li>
 </ul>
@@ -111,7 +111,7 @@
         <div class="rst-content">
           
 
-
+ 
 
 
 
@@ -138,24 +138,24 @@
 <div class="section" id="basic-usage">
 <h2>Basic usage<a class="headerlink" href="#basic-usage" title="Permalink to this headline">¶</a></h2>
 <p>Command to launch the pipeline is as follows:</p>
-<div class="highlight-bash"><div class="highlight"><pre>python MIRZA_G_pipeline.py run --config congig.ini --name-suffix name_of_the_run
+<div class="highlight-bash"><div class="highlight"><pre><span></span>python MIRZA_G_pipeline.py run --config congig.ini --name-suffix name_of_the_run
 </pre></div>
 </div>
 <p>All parameters for the script:</p>
 <p>The main script launching MIRZA-G analysis pipeline</p>
-<pre class="literal-block">
-usage: MIRZA-G [-h] {run,clean} ...
-</pre>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">MIRZA</span><span class="o">-</span><span class="n">G</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">{</span><span class="n">run</span><span class="p">,</span><span class="n">clean</span><span class="p">}</span> <span class="o">...</span>
+</pre></div>
+</div>
 <dl class="docutils">
 <dt>Sub-commands:</dt>
 <dd><dl class="first last docutils">
 <dt><strong>run</strong></dt>
 <dd><p class="first">Run a pipeline</p>
-<pre class="literal-block">
-usage: MIRZA-G run [-h] [-v] --config CONFIG [--name-suffix NAME_SUFFIX]
-                   [--protocol {seed,scan}] [--calulate-bls]
-                   [--modules [MODULES [MODULES ...]]]
-</pre>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">MIRZA</span><span class="o">-</span><span class="n">G</span> <span class="n">run</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">v</span><span class="p">]</span> <span class="o">--</span><span class="n">config</span> <span class="n">CONFIG</span> <span class="p">[</span><span class="o">--</span><span class="n">name</span><span class="o">-</span><span class="n">suffix</span> <span class="n">NAME_SUFFIX</span><span class="p">]</span>
+                   <span class="p">[</span><span class="o">--</span><span class="n">protocol</span> <span class="p">{</span><span class="n">seed</span><span class="p">,</span><span class="n">scan</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">calulate</span><span class="o">-</span><span class="n">bls</span><span class="p">]</span>
+                   <span class="p">[</span><span class="o">--</span><span class="n">modules</span> <span class="p">[</span><span class="n">MODULES</span> <span class="p">[</span><span class="n">MODULES</span> <span class="o">...</span><span class="p">]]]</span>
+</pre></div>
+</div>
 <dl class="last docutils">
 <dt>Options:</dt>
 <dd><table class="first last docutils option-list" frame="void" rules="none">
@@ -193,9 +193,9 @@ usage: MIRZA-G run [-h] [-v] --config CONFIG [--name-suffix NAME_SUFFIX]
 </dd>
 <dt><strong>clean</strong></dt>
 <dd><p class="first">Clean after previous run</p>
-<pre class="literal-block">
-usage: MIRZA-G clean [-h] [-v] [-y]
-</pre>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">MIRZA</span><span class="o">-</span><span class="n">G</span> <span class="n">clean</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">v</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">y</span><span class="p">]</span>
+</pre></div>
+</div>
 <dl class="last docutils">
 <dt>Options:</dt>
 <dd><table class="first last docutils option-list" frame="void" rules="none">
@@ -223,7 +223,7 @@ usage: MIRZA-G clean [-h] [-v] [-y]
 <h2>Preparing config file<a class="headerlink" href="#preparing-config-file" title="Permalink to this headline">¶</a></h2>
 <p>Copy config_example.ini from MIRZA-G directory to your working directory (directory
 where you want to perform calculation, WD):</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nb">cd </span>Your/Working/Direcory
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="nb">cd</span> Your/Working/Direcory
 cp Path/To/MIRZA-G/config_example.ini config.ini
 </pre></div>
 </div>

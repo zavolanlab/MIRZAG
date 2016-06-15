@@ -82,7 +82,7 @@
             
             
                 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="">Instalation</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Instalation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#dependencies">Dependencies</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#mirza">MIRZA</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#contrafold">CONTRAfold</a></li>
@@ -117,7 +117,7 @@
         <div class="rst-content">
           
 
-
+ 
 
 
 
@@ -152,7 +152,7 @@ It is statically compiled so you do not need to compile it again</p>
 <h3>CONTRAfold<a class="headerlink" href="#contrafold" title="Permalink to this headline">¶</a></h3>
 <p>Download and install <a class="reference external" href="http://contra.stanford.edu/contrafold/download.html">CONTRAfold</a>.
 It might be that you experience an error when compiling CONTRAfold. Something like this:</p>
-<div class="highlight-bash"><div class="highlight"><pre>In file included from LBFGS.hpp:52:0,
+<div class="highlight-bash"><div class="highlight"><pre><span></span>In file included from LBFGS.hpp:52:0,
                  from InnerOptimizationWrapper.hpp:12,
                  from OptimizationWrapper.hpp:12,
                  from Contrafold.cpp:16:
@@ -170,7 +170,7 @@ make: *** <span class="o">[</span>Contrafold.o<span class="o">]</span> Error 1
 <ul class="simple">
 <li>add -fpermissive flag to CSXXFLAGS in Makefile:</li>
 </ul>
-<div class="highlight-c"><div class="highlight"><pre><span class="n">CXXFLAGS</span> <span class="o">=</span> <span class="o">-</span><span class="n">O3</span> <span class="o">-</span><span class="n">DNDEBUG</span> <span class="o">-</span><span class="n">W</span> <span class="o">-</span><span class="n">pipe</span> <span class="o">-</span><span class="n">Wundef</span> <span class="o">-</span><span class="n">Winline</span> <span class="o">--</span><span class="n">param</span> <span class="n">large</span><span class="o">-</span><span class="n">function</span><span class="o">-</span><span class="n">growth</span><span class="o">=</span><span class="mi">100000</span> <span class="o">-</span><span class="n">Wall</span> <span class="o">-</span><span class="n">fpermissive</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">CXXFLAGS</span> <span class="o">=</span> <span class="o">-</span><span class="n">O3</span> <span class="o">-</span><span class="n">DNDEBUG</span> <span class="o">-</span><span class="n">W</span> <span class="o">-</span><span class="n">pipe</span> <span class="o">-</span><span class="n">Wundef</span> <span class="o">-</span><span class="n">Winline</span> <span class="o">--</span><span class="n">param</span> <span class="n">large</span><span class="o">-</span><span class="n">function</span><span class="o">-</span><span class="n">growth</span><span class="o">=</span><span class="mi">100000</span> <span class="o">-</span><span class="n">Wall</span> <span class="o">-</span><span class="n">fpermissive</span>
 
 <span class="n">instead</span> <span class="n">of</span>
 <span class="n">CXXFLAGS</span> <span class="o">=</span> <span class="o">-</span><span class="n">O3</span> <span class="o">-</span><span class="n">DNDEBUG</span> <span class="o">-</span><span class="n">W</span> <span class="o">-</span><span class="n">pipe</span> <span class="o">-</span><span class="n">Wundef</span> <span class="o">-</span><span class="n">Winline</span> <span class="o">--</span><span class="n">param</span> <span class="n">large</span><span class="o">-</span><span class="n">function</span><span class="o">-</span><span class="n">growth</span><span class="o">=</span><span class="mi">100000</span> <span class="o">-</span><span class="n">Wall</span>
@@ -179,25 +179,25 @@ make: *** <span class="o">[</span>Contrafold.o<span class="o">]</span> Error 1
 <ul class="simple">
 <li>add in Utilities.hpp:</li>
 </ul>
-<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include &lt;limits.h&gt;</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;limits.h&gt;</span><span class="cp"></span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="jobber">
 <h3>Jobber<a class="headerlink" href="#jobber" title="Permalink to this headline">¶</a></h3>
 <p>Download and setup Jobber python library for workflow managment.</p>
-<div class="highlight-bash"><div class="highlight"><pre>pip install Jobber
+<div class="highlight-bash"><div class="highlight"><pre><span></span>pip install Jobber
 </pre></div>
 </div>
 <p>After installation start the Jobber daemon:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>nohup jobber_server &gt; jobber.log 2&gt;<span class="p">&amp;</span><span class="m">1</span> <span class="p">&amp;</span>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ nohup jobber_server &gt; jobber.log 2&gt;<span class="p">&amp;</span><span class="m">1</span> <span class="p">&amp;</span>
 </pre></div>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p>If you installed Jobber as user you might not have an access to the jobber_server. By
 default the binary location is $HOME/.local/bin and you have to export it in bash:</p>
-<div class="highlight-python"><div class="highlight"><pre>$ export PATH=&quot;$HOME/.local/bin:$PATH&quot;
+<div class="highlight-python"><div class="highlight"><pre><span></span>$ export PATH=&quot;$HOME/.local/bin:$PATH&quot;
 </pre></div>
 </div>
 <p>or add this statement to .bashrc file.</p>
@@ -212,16 +212,16 @@ according to your needs.</p>
 <p>This should create a jobber.sqlite file next to config.py where jobs will be stored (all in ~/.jobber).
 Now you can create pipelines that will be managed with a python script.</p>
 <p>To stop the jobber daemon, run following command:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>jobber_server -stop
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ jobber_server -stop
 </pre></div>
 </div>
 <p>You can watch and control your jobs and pipelines present in the database using simple we interface.
 To launch it type:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>jobber_web
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ jobber_web
 </pre></div>
 </div>
 <p>or</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>jobber_web --ip Your.IP.addres --port YourPort
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ jobber_web --ip Your.IP.addres --port YourPort
 </pre></div>
 </div>
 <div class="admonition note">
@@ -251,16 +251,16 @@ in config.py file from &#8220;drmaa&#8221; to &#8220;local&#8221;</p>
 <div class="section" id="download">
 <h2>Download<a class="headerlink" href="#download" title="Permalink to this headline">¶</a></h2>
 <p>The pipeline is available as a git repository on GitHub:</p>
-<div class="highlight-bash"><div class="highlight"><pre>git clone https://github.com/guma44/MIRZAG.git
+<div class="highlight-bash"><div class="highlight"><pre><span></span>git clone https://github.com/guma44/MIRZAG.git
 </pre></div>
 </div>
 <p>By default we provide 3&#8217;UTR sequences without alignments. If you would like run
 MIRZA-G with conservation you need to download alignments to this particular 3&#8217;UTR set.</p>
-<div class="highlight-bash"><div class="highlight"><pre>wget http://www.clipz.unibas.ch/public/mirza/MIRZAG_alignments.tar.gz
+<div class="highlight-bash"><div class="highlight"><pre><span></span>wget http://www.clipz.unibas.ch/public/mirza/MIRZAG_alignments.tar.gz
 </pre></div>
 </div>
 <p>You can also download whole package including alignments from out website:</p>
-<div class="highlight-bash"><div class="highlight"><pre>wget http://www.clipz.unibas.ch/public/mirza/pipeline_MIRZAG.tar.gz
+<div class="highlight-bash"><div class="highlight"><pre><span></span>wget http://www.clipz.unibas.ch/public/mirza/pipeline_MIRZAG.tar.gz
 </pre></div>
 </div>
 </div>
