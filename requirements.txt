@@ -13,3 +13,4 @@ snowballstemmer==1.2.1
 Sphinx==1.4.4
 sphinx-argparse==0.1.15
 configobj==5.0.6
+Jobber==0.1.4
