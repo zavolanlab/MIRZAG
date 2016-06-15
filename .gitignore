@@ -12,3 +12,4 @@
 !*.rst
 !*.html
 !/docs/_build/html/
+!requirements.txt
