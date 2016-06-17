@@ -11,5 +11,6 @@
 !*.ini
 !*.rst
 !*.html
+!*.nh
 !/docs/_build/html/
 !requirements.txt

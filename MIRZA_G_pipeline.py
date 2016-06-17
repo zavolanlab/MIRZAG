@@ -1,6 +1,13 @@
 """
 The main script launching MIRZA-G analysis pipeline
 """
+
+__date_ = "2015-05-29"
+__author__ = "Rafal Gumienny"
+__email__ = "r.gumienny@unibas.ch"
+__version__ = 2.0.0
+
+
 import os
 import sys
 import shutil

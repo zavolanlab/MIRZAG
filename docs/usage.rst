@@ -49,3 +49,9 @@ up before (like DRMAA path, modules necessary, queues names etc.). All these par
 
 To run it locally it takes ~70 to 90 seconds for one miRNA without conservation calculation and ~170 seconds with calculation (This
 might be substantial amount of time (up to half an hour per miRNA) for worse processors).
+
+
+Example
+=======
+
+To test the pipeline go to the tests directory. There you can 
