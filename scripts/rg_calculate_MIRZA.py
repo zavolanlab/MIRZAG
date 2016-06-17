@@ -99,6 +99,9 @@ sysout = sys.stdout.write
 
 def main(options):
     """Main logic of the script"""
+    # Check if path to MIRZA is valid
+    if not is_executable(options.mirzabin):
+        raise Exception("Path to MIRZA is invalid (%s)! Please define it with --mirzabin option." % options.mirzabin)
     if options.verbose:
         syserr("Reading coordinate file\n")
     coords = read_coordinates(options.coords, True)
@@ -763,6 +766,27 @@ def clean():
         os.unlink(options.coords + 'mirza_mirna_expressions' + '.fa')
     except:
         pass
+
+
+def is_executable(program):
+    """
+    Check if the path/binary provided is valid executable
+    """
+    def is_exe(fpath):
+        return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
+
+    fpath, fname = os.path.split(program)
+    if fpath:
+        if is_exe(program):
+            return True
+    else:
+        for path in os.environ["PATH"].split(os.pathsep):
+            path = path.strip('"')
+            exe_file = os.path.join(path, program)
+            if is_exe(exe_file):
+                return True
+
+    return False
 
 if __name__ == '__main__':
     try:

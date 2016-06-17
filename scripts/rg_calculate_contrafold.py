@@ -74,6 +74,9 @@ sysout = sys.stdout.write
 
 def main(options):
     """Main logic of the script"""
+    # Check if path to CONTRAfold is valid
+    if not is_executable(options.contrabin):
+        raise Exception("Path to CONTRAfold is invalid (%s)! Please define it with --contrabin option." % options.contrabin)
     # Read coords file into the table: [geneID, miR name, begining position,
     # end position]
     coords = []
@@ -186,6 +189,27 @@ def main(options):
 
     outfile.close()
     shutil.rmtree(dirpath, ignore_errors=True)
+
+
+def is_executable(program):
+    """
+    Check if the path/binary provided is valid executable
+    """
+    def is_exe(fpath):
+        return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
+
+    fpath, fname = os.path.split(program)
+    if fpath:
+        if is_exe(program):
+            return True
+    else:
+        for path in os.environ["PATH"].split(os.pathsep):
+            path = path.strip('"')
+            exe_file = os.path.join(path, program)
+            if is_exe(exe_file):
+                return True
+
+    return False
 
 if __name__ == '__main__':
     try:
