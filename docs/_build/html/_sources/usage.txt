@@ -49,3 +49,31 @@ up before (like DRMAA path, modules necessary, queues names etc.). All these par
 
 To run it locally it takes ~70 to 90 seconds for one miRNA without conservation calculation and ~170 seconds with calculation (This
 might be substantial amount of time (up to half an hour per miRNA) for worse processors).
+
+
+Example
+=======
+
+To test the pipeline go to the tests directory and run:
+
+.. code-block:: bash
+
+    cd Path/To/MIRZA-G/tests
+    bash rg_run_test.sh help
+
+.. note::
+
+    Usage: rg_run_test.sh clean/run [MIRZA/binary/path] ['CONTRAfold/binary/path']
+
+And if you have installed MIRZA and CONTRAfold to default locations (MIRZA and contrafold) run:
+
+.. code-block:: bash
+
+    bash rg_run_test.sh run
+
+Otherwise provide paths to **BOTH** of them:
+
+.. code-block:: bash
+
+    bash rg_run_test.sh run Path/To/MIRZA/binary Path/To/CONTRAfold/binary
+

@@ -54,4 +54,26 @@ might be substantial amount of time (up to half an hour per miRNA) for worse pro
 Example
 =======
 
-To test the pipeline go to the tests directory. There you can 
+To test the pipeline go to the tests directory and run:
+
+.. code-block:: bash
+
+    cd Path/To/MIRZA-G/tests
+    bash rg_run_test.sh help
+
+.. note::
+
+    Usage: rg_run_test.sh clean/run [MIRZA/binary/path] ['CONTRAfold/binary/path']
+
+And if you have installed MIRZA and CONTRAfold to default locations (MIRZA and contrafold) run:
+
+.. code-block:: bash
+
+    bash rg_run_test.sh run
+
+Otherwise provide paths to **BOTH** of them:
+
+.. code-block:: bash
+
+    bash rg_run_test.sh run Path/To/MIRZA/binary Path/To/CONTRAfold/binary
+
