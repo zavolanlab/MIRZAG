@@ -113,6 +113,21 @@ def main(options):
     if options.protocol == "scan":
         mkdir_p(os.path.join(output_directory, "MIRZAscan"))
 
+    # checking only works locally because on HPC other software might be
+    # installed and it can have different path. However mind that this might
+    # also not work if environment uses modules
+    if settings['general'].get('executer', 'drmaa') == 'local':
+        #
+        # Check if path to CONTRAfold is valid
+        #
+        if not is_executable(settings['general']['contrafold_binary']):
+            raise Exception("Path to CONTRAfold is invalid (%s)! Please define it with --contrabin option." % settings['general']['contrafold_binary'])
+        #
+        # Check if path to MIRZA is valid
+        #
+        if not is_executable(settings['general']['mirza_binary']):
+            raise Exception("Path to MIRZA is invalid (%s)! Please define it with --mirzabin option." % settings['general']['mirza_binary'])
+
 
     jobber = JobClient.Jobber()
 
@@ -221,6 +236,27 @@ def mkdir_p(path_to_dir):
             sys.exit()
         else:
             raise e
+
+
+def is_executable(program):
+    """
+    Check if the path/binary provided is valid executable
+    """
+    def is_exe(fpath):
+        return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
+
+    fpath, fname = os.path.split(program)
+    if fpath:
+        if is_exe(program):
+            return True
+    else:
+        for path in os.environ["PATH"].split(os.pathsep):
+            path = path.strip('"')
+            exe_file = os.path.join(path, program)
+            if is_exe(exe_file):
+                return True
+
+    return False
 
 
 if __name__ == '__main__':
