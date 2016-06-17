@@ -16,4 +16,10 @@ set -o pipefail
 
 cwd=$(pwd)
 
-sed "s~path_to_tests~${cwd}~g" config_template.ini
+# clean up
+rm -rf config.ini
+python ../MIRZA_G_pipeline.py clean -y
+
+# substitute and run
+sed "s~path_to_tests~${cwd}~g" config_template.ini > config.ini
+python ../MIRZA_G_pipeline.py run --config config.ini
