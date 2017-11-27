@@ -7,7 +7,7 @@ Dependencies
 MIRZA
 -----
 
-Download and install `MIRZA <http://www.clipz.unibas.ch/index.php?r=tools/mirza/Submission/index>`_.
+Download and install `MIRZA http://www.clipz.unibas.ch/mirzag/mirza.tar.gz`_.
 It is statically compiled so you do not need to compile it again
 
 CONTRAfold
@@ -140,14 +140,8 @@ The pipeline is available as a git repository on GitHub:
 
 By default we provide 3'UTR sequences without alignments. If you would like run
 MIRZA-G with conservation you need to download alignments to this particular 3'UTR set.
+They are included in the whole package file:
 
 .. code-block:: bash
 
-    wget http://www.clipz.unibas.ch/public/mirza/MIRZAG_alignments.tar.gz
-
-
-You can also download whole package including alignments from out website:
-
-.. code-block:: bash
-
-    wget http://www.clipz.unibas.ch/public/mirza/pipeline_MIRZAG.tar.gz
+    wget http://www.clipz.unibas.ch/mirzag/pipeline_MIRZAG.tar.gz
