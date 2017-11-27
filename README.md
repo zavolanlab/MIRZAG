@@ -4,4 +4,5 @@ MIRZA-G is a tool and a model used for miRNA target prediction. Please refer to 
 for greater details.
 
 
-* Documentation: https://MIRZAG.readthedocs.org.
+* Documentation: https://MIRZAG.readthedocs.org
+* Supplementary files: http://www.clipz.unibas.ch/mirzag
