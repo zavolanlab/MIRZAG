@@ -17,6 +17,7 @@ import time
 import gzip
 import dendropy
 import itertools
+import tarfile
 import traceback
 import subprocess
 import cPickle as cpickle
@@ -63,11 +64,11 @@ parser.add_argument('--tree',
                     dest='tree',
                     action='store',
                     help='Phylogenetic tree of the species used in alignment file')
-parser.add_argument('--mln-dir',
+parser.add_argument('--msa',
                     default='',
-                    dest='mln_dir',
+                    dest='msa',
                     action='store',
-                    help='Directory with multiple alignment files')
+                    help='Archive (tar.gz) with multiple sequence alignment files')
 parser.add_argument('--threshold',
                     type=float,
                     dest='thr',
@@ -119,9 +120,7 @@ def main(options):
             syserr("Preparing alignments and phylogenetic tree\n")
 
         phylo_tree = read_phylogenetic_tree(options.tree)
-        multiple_alignment_dict = read_multiple_alignments(phylo_tree,
-                                                           options.mln_dir,
-                                                           coords)
+        multiple_alignment_dict = read_multiple_alignments(options.msa, coords)
         mirhomologues = make_homologues_mirnas(phylo_tree, miRNAseqs)
 
     with gzip.open(options.out, 'wb') as outfile:
@@ -709,8 +708,6 @@ def read_phylogenetic_tree(path_to_file):
 
     """
     try:
-        # phylo_tree = dendropy.Tree()
-        # phylo_tree.read_from_path(path_to_file, "newick")
         phylo_tree = dendropy.Tree.get_from_path(path_to_file, "newick")
     except IOError:
         raise IOError("Cannot open phylogenetic tree %s" % path_to_file)
@@ -718,27 +715,24 @@ def read_phylogenetic_tree(path_to_file):
     return phylo_tree
 
 
-def read_multiple_alignments(tree, directory_path, coordinates):
-    """Read MLN files into dict
+def read_multiple_alignments(archive, coordinates):
+    """Read multiple sequence alignment files into dict
 
     Args:
-        tree (@todo): @todo
-        directory_path (@todo): @todo
+        archive (@todo): @todo
         coordinates (@todo): @todo
 
     Returns: @todo
 
     """
     multiple_alignment_dict = {}
-    for coord in coordinates:
-        try:
-            handle = open(os.path.join(directory_path,
-                                       coord[0].replace('|', '__')), 'rb')
-            multiple_alignment_dict[coord[0]] = cpickle.load(handle)
-        except Exception, e:
-            syserr("No alignment for %s, going on without it.\n" % coord[0])
-            syserr(str(e) + "\n")
-
+    with tarfile.open(archive, 'r:gz') as t:
+        for coord in coordinates:
+            f = t.extractfile(coord[0])
+            if f is None:
+                syserr("No alignment for %s, going on without it.\n" % coord[0])
+            else:
+                multiple_alignment_dict[coord[0]] = cpickle.load(f)
     return multiple_alignment_dict
 
 

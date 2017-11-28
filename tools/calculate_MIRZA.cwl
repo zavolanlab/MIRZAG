@@ -38,12 +38,12 @@ inputs:
     inputBinding:
       prefix: --tree
 
-  mln_dir:
-    type: ['null', Directory]
+  msa:
+    type: ['null', File]
     default: null
-    doc: Directory with multiple alignment files
+    doc: Archive (tar.gz) with multiple sequence alignment files
     inputBinding:
-      prefix: --mln-dir
+      prefix: --msa
 
   onlymirza:
     type:

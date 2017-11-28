@@ -11,7 +11,7 @@ inputs:
   input_mirna: File
   input_mrna: File
   input_tree: File
-  input_multiple_alignments: Directory
+  input_multiple_alignments: File
   input_model_with_bls: File
   input_model_without_bls: File
   output_file_name: string
@@ -92,8 +92,6 @@ steps:
     out:
       [ output ]
 
-  # TODO this step is very slow (toil is slower than the reference implementation)
-  # this is probably due to copying a huge number of files
   calculate_mirza:
     run: tools/calculate_MIRZA.cwl
     scatter: coords
@@ -102,7 +100,7 @@ steps:
       motifs: input_mirna
       coords: split_mirza_results/output
       tree: input_tree
-      mln_dir: input_multiple_alignments
+      msa: input_multiple_alignments
     out:
       [ output ]
 

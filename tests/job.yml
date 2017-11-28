@@ -11,8 +11,8 @@ input_tree:
   path: "../data/hg19_tree.nh"
 
 input_multiple_alignments:
-  class: Directory
-  path: "../data/HumanAlignments"
+  class: File
+  path: "../data/HumanAlignments.tar.gz"
 
 input_model_with_bls:
   class: File
