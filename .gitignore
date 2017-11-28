@@ -14,3 +14,7 @@
 !*.nh
 !/docs/_build/html/
 !requirements.txt
+!*.cwl
+!*.yml
+
+venv

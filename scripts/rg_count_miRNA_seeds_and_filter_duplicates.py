@@ -150,7 +150,7 @@ def main(options):
         data = [(for_empty_data_id, for_empty_data_mir, 60, 67, for_empty_data_seq)]
     data = pd.DataFrame(data, columns=names)
     data['newid'] = [i.split(options.split_by)[options.index_after_split] for i in data.id]
-    ndf = data.drop_duplicates(cols=['newid', 'mirna', 'seq'])
+    ndf = data.drop_duplicates(['newid', 'mirna', 'seq'])
     with gzip.open(options.output, 'wb') as o:
         ndf[names].to_csv(o, header=False, index=False, sep='\t')
     if options.verbose:

@@ -709,8 +709,9 @@ def read_phylogenetic_tree(path_to_file):
 
     """
     try:
-        phylo_tree = dendropy.Tree()
-        phylo_tree.read_from_path(path_to_file, "newick")
+        # phylo_tree = dendropy.Tree()
+        # phylo_tree.read_from_path(path_to_file, "newick")
+        phylo_tree = dendropy.Tree.get_from_path(path_to_file, "newick")
     except IOError:
         raise IOError("Cannot open phylogenetic tree %s" % path_to_file)
 
@@ -731,7 +732,8 @@ def read_multiple_alignments(tree, directory_path, coordinates):
     multiple_alignment_dict = {}
     for coord in coordinates:
         try:
-            handle = open(os.path.join(directory_path, coord[0]), 'rb')
+            handle = open(os.path.join(directory_path,
+                                       coord[0].replace('|', '__')), 'rb')
             multiple_alignment_dict[coord[0]] = cpickle.load(handle)
         except Exception, e:
             syserr("No alignment for %s, going on without it.\n" % coord[0])
@@ -750,7 +752,7 @@ def make_homologues_mirnas(phylogenetic_tree, mirna_seqs):
     Returns: @todo
 
     """
-    species = [leaf.taxon.label for leaf in phylogenetic_tree.leaf_iter()]
+    species = [leaf.taxon.label for leaf in phylogenetic_tree.leaf_node_iter()]
     mirhomologues = pd.DataFrame({sp: {mirid: mirna_seqs[mirid][:21]
                                        for mirid in mirna_seqs.keys()}
                                   for sp in species}).transpose()

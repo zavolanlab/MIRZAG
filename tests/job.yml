@@ -1,0 +1,28 @@
+input_mirna:
+  class: File
+  path: "mirnas.fa"
+
+input_mrna:
+  class: File
+  path: "utrs.fa"
+
+input_tree:
+  class: File
+  path: "../data/hg19_tree.nh"
+
+input_multiple_alignments:
+  class: Directory
+  path: "../data/HumanAlignments"
+
+input_model_with_bls:
+  class: File
+  path: "../data/glm-with-bls.bin"
+
+input_model_without_bls:
+  class: File
+  path: '../data/glm-without-bls.bin'
+
+output_file_name: 'mirza_g_results_scan.tsv.gz'
+
+settings_split_by: '|'
+settings_index_after_split: 1

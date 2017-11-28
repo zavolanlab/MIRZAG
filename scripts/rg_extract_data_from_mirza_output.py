@@ -24,6 +24,10 @@ parser.add_argument("-v",
                     action="store_true",
                     default=False,
                     help="Be loud!")
+parser.add_argument("--input",
+                    dest="input",
+                    required=True,
+                    help="Input file from MIRZA")
 parser.add_argument("--output",
                     dest="output",
                     help="Output file in Tab format.")
@@ -57,57 +61,58 @@ def main(options):
 
     results = {}
     try:
-        for key, group in itertools.groupby(sys.stdin, lambda x: x == "\n"):
-            if not key:
-                proper_group = False
-                for line in group:
-                    if line.startswith(">"):
-                        mRNAid, begend = line.split()[0][1:].split(":")
-                        miRNAid = line.split()[4][1:]
-                        beg = int(begend.split(",")[0][1:])
-                        end = int(begend.split(",")[1][:-1])
-                        score = float(line.split()[-1])
+        with open(options.input) as infile:
+            for key, group in itertools.groupby(infile, lambda x: x == "\n"):
+                if not key:
+                    proper_group = False
+                    for line in group:
+                        if line.startswith(">"):
+                            mRNAid, begend = line.split()[0][1:].split(":")
+                            miRNAid = line.split()[4][1:]
+                            beg = int(begend.split(",")[0][1:])
+                            end = int(begend.split(",")[1][:-1])
+                            score = float(line.split()[-1])
+                            if score < options.threshold:
+                                break
+                            proper_group = True
+                        elif line.startswith("miRNA"):
+                            mirhyb = line.split("\t")[1].split(" ")[0]
+                        elif line.startswith("A L"):
+                            hyb = line.split("\t")[1].rstrip()
+                        elif line.startswith("mRNA"):
+                            mrhyb = line.split("\t")[1].split(" ")[0]
+                    if proper_group:
                         if score < options.threshold:
-                            break
-                        proper_group = True
-                    elif line.startswith("miRNA"):
-                        mirhyb = line.split("\t")[1].split(" ")[0]
-                    elif line.startswith("A L"):
-                        hyb = line.split("\t")[1].rstrip()
-                    elif line.startswith("mRNA"):
-                        mrhyb = line.split("\t")[1].split(" ")[0]
-                if proper_group:
-                    if score < options.threshold:
-                        continue
-                    hybrids = [mirhyb, hyb, mrhyb]
-                    mirseq, hybseq, mrhybseq, mrpos = get_hybrid_vector(hybrids)
-                    canonical, type_of_site = is_canonical([mirseq, hybseq, mrhybseq])
-                    # print mRNAid, beg, end, score
-                    # print mirseq, hybseq, mrhybseq, mrpos
-                    # for h in hybrids:
-                    #     print h
-                    # print
-                    # for h in hybrids:
-                    #     print h[::-1]
-                    if hybseq[0] == "|":
-                        truebeg = end - mrpos[0] - 7
-                        trueend = end - mrpos[0]
-                    else:
-                        truebeg = end - mrpos[0] - 7
-                        trueend = end - mrpos[0]
-                    # print "Actual position: %i - %i" % (truebeg, trueend)
-                    # print seqs[mRNAid][beg - 1: end], len(seqs[mRNAid][beg - 1: end]), seqs[mRNAid][truebeg: trueend]
-                    context_beg, context_end = get_indices(options.context, truebeg, trueend)
-                    sequence = seqs[mRNAid][context_beg: context_end]
-                    if len(sequence) < options.context:
-                        continue
-                    dkey = "%s\t%s\t%i\t%i" % (mRNAid, miRNAid, truebeg, trueend)
-                    dval = (score, "canonical" if canonical else "noncanonical", type_of_site, sequence)
-                    if dkey not in results:
-                        results[dkey] = dval
-                    else:
-                        if results[dkey][0] < dval[0]:
+                            continue
+                        hybrids = [mirhyb, hyb, mrhyb]
+                        mirseq, hybseq, mrhybseq, mrpos = get_hybrid_vector(hybrids)
+                        canonical, type_of_site = is_canonical([mirseq, hybseq, mrhybseq])
+                        # print mRNAid, beg, end, score
+                        # print mirseq, hybseq, mrhybseq, mrpos
+                        # for h in hybrids:
+                        #     print h
+                        # print
+                        # for h in hybrids:
+                        #     print h[::-1]
+                        if hybseq[0] == "|":
+                            truebeg = end - mrpos[0] - 7
+                            trueend = end - mrpos[0]
+                        else:
+                            truebeg = end - mrpos[0] - 7
+                            trueend = end - mrpos[0]
+                        # print "Actual position: %i - %i" % (truebeg, trueend)
+                        # print seqs[mRNAid][beg - 1: end], len(seqs[mRNAid][beg - 1: end]), seqs[mRNAid][truebeg: trueend]
+                        context_beg, context_end = get_indices(options.context, truebeg, trueend)
+                        sequence = seqs[mRNAid][context_beg: context_end]
+                        if len(sequence) < options.context:
+                            continue
+                        dkey = "%s\t%s\t%i\t%i" % (mRNAid, miRNAid, truebeg, trueend)
+                        dval = (score, "canonical" if canonical else "noncanonical", type_of_site, sequence)
+                        if dkey not in results:
                             results[dkey] = dval
+                        else:
+                            if results[dkey][0] < dval[0]:
+                                results[dkey] = dval
     except IOError as e:
         if e.errno == errno.EPIPE:
             pass

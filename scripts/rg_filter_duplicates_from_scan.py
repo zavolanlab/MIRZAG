@@ -37,8 +37,7 @@ parser.add_argument("--index-after-split",
                     help="After split take this column as new id, 0 based")
 parser.add_argument("--output",
                     dest="output",
-                    required=True,
-                    help="Output name")
+                    help="Output name (default: stdout)")
 
 
 # redefine a functions for writing to stdout and stderr to save some writting
@@ -52,9 +51,13 @@ def main(options):
     names_to_save = ['id', 'mirna', 'beg', 'end', 'seq']
     df = pd.read_table(options.coords, names=names)
     df['newid'] = [i.split(options.split_by)[options.index_after_split] for i in df.id]
-    ndf = df.drop_duplicates(cols=['newid', 'mirna', 'seq'])
-    with open(options.output, 'wb') as o:
-        ndf[names_to_save].to_csv(o, header=False, index=False, sep='\t')
+    ndf = df.drop_duplicates(['newid', 'mirna', 'seq'])
+
+    if options.output is None:
+        ndf[names_to_save].to_csv(sys.stdout, header=False, index=False, sep='\t')
+    else:
+        with open(options.output, 'wb') as o:
+            ndf[names_to_save].to_csv(o, header=False, index=False, sep='\t')
     if options.verbose:
         syserr("Filtered %s\n" % options.coords)
         syserr(" - number of coordinates before: %i\n" % len(df.index))

@@ -26,12 +26,24 @@ parser.add_argument("-v",
                     action="store_true",
                     default=False,
                     help="Be loud!")
-parser.add_argument("--inputs",
-                    dest="inputs",
-                    help="Coma-separated list of input paths")
+# parser.add_argument("--inputs",
+#                     dest="inputs",
+#                     help="Coma-separated list of input paths")
 parser.add_argument("--coords",
                     dest="coords",
                     help="Cooridinate file  used in the beginning")
+parser.add_argument("--mirza",
+                    dest="mirza",
+                    help="MIRZA output file")
+parser.add_argument("--contrafold",
+                    dest="contrafold",
+                    help="CONTRAfold output file")
+parser.add_argument("--flanks",
+                    dest="flanks",
+                    help="Flanks compositon output file")
+parser.add_argument("--distance",
+                    dest="distance",
+                    help="Distane to boundary output file")
 parser.add_argument("--model-bls",
                     dest="model_bls",
                     help="Path to model with branch length score")
@@ -110,7 +122,8 @@ def main(options):
     #
     # read the data and clean it a little
     #
-    accessibility, mirza, flanks, distance = options.inputs.split(",")
+    accessibility, mirza, flanks, distance = (options.contrafold, options.mirza,
+                                              options.flanks, options.distance)
 
     if options.verbose:
         syserr("Preparing coordinates\n")
