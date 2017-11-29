@@ -5,6 +5,7 @@ class: Workflow
 
 requirements:
    - class: ScatterFeatureRequirement
+   - class: SubworkflowFeatureRequirement
 
 inputs:
 
@@ -22,7 +23,7 @@ outputs:
 
   mirzag_output:
     type: File
-    outputSource: concatenate_results/output
+    outputSource: analyze/output
 
 steps:
 
@@ -90,66 +91,19 @@ steps:
     out:
       [ output ]
 
-  calculate_mirza:
-    run: tools/calculate_MIRZA.cwl
-    scatter: coords
+  analyze:
+    run: tools/analysis.cwl
     in:
-      seq: input_mrna
-      motifs: input_mirna
-      coords: split/output
-      tree: input_tree
-      msa: input_multiple_alignments
-    out:
-      [ output ]
-
-  calculate_contrafold:
-    run: tools/calculate_contrafold.cwl
-    scatter: coords
-    in:
-      seq: input_mrna
-      coords: split/output
-    out:
-      [ output ]
-
-  calculate_flanks:
-    run: tools/calculate_flanks_composition.cwl
-    scatter: coords
-    in:
-      seq: input_mrna
-      coords: split/output
-    out:
-      [ output ]
-
-  calculate_distance:
-    run: tools/calculate_distance.cwl
-    scatter: coords
-    in:
-      seq: input_mrna
-      coords: split/output
-    out:
-      [ output ]
-
-  merge_results_add_probability_and_calculate_per_gene_score:
-    run: tools/merge_results_add_probability_and_calculate_per_gene_score.cwl
-    scatter: [ coords, mirza, contrafold, flanks, distance ]
-    scatterMethod: dotproduct
-    in:
-      coords: split/output
-      mirza: calculate_mirza/output
-      contrafold: calculate_contrafold/output
-      flanks: calculate_flanks/output
-      distance: calculate_distance/output
-      model_bls: input_model_with_bls
-      model_nobls: input_model_without_bls
-      split_by: settings_split_by
-      column: settings_index_after_split
-    out:
-      [ output ]
-
-  concatenate_results:
-    run: tools/concatenate.cwl
-    in:
-      files: merge_results_add_probability_and_calculate_per_gene_score/output
-      output_file: output_file_name
+      input_mirna: input_mirna
+      input_mrna: input_mrna
+      input_coords:
+        source: split/output
+      input_tree: input_tree
+      input_multiple_alignments: input_multiple_alignments
+      input_model_with_bls: input_model_with_bls
+      input_model_without_bls: input_model_without_bls
+      output_file_name: output_file_name
+      settings_split_by: settings_split_by
+      settings_index_after_split: settings_index_after_split
     out:
       [ output ]
