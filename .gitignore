@@ -16,5 +16,6 @@
 !requirements.txt
 !*.cwl
 !*.yml
+!*.md
 
 venv

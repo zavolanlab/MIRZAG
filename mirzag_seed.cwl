@@ -24,8 +24,6 @@ outputs:
     type: File
     outputSource: concatenate_results/output
 
-# TODO implement 'seed scan' (a parallel option for execution)
-
 steps:
 
   prepare_mirnas:
@@ -35,60 +33,14 @@ steps:
     out:
       [ output ]
 
-  generate_mrna_chunks:
-    run: tools/generate_mrna_chunks.cwl
+  split:
+    run: tools/count_miRNA_seeds_and_filter_duplicates.cwl
+    scatter: [ motifs ]
     in:
-      input: input_mrna
-    out:
-      [ output ]
-
-  mirna_expressions:
-    run: tools/generate_mirna_expressions.cwl
-    in:
-      input: input_mirna
-    out:
-      [ output ]
-
-  mirza:
-    run: tools/mirza.cwl
-    scatter: [ mrna, mirna ]
-    scatterMethod: flat_crossproduct
-    in:
-      expressions: mirna_expressions/output
-      mrna: generate_mrna_chunks/output
-      mirna: prepare_mirnas/output
-    out:
-      [ output ]
-
-  mirza_parser:
-    run: tools/extract_data_from_mirza_output.cwl
-    scatter: [ mirza ]
-    in:
-      mirza: mirza/output
-      mrna: input_mrna
-    out:
-      [ output ]
-
-  concatenate_mirza:
-    run: tools/concatenate.cwl
-    in:
-      files: mirza_parser/output
-      output_file:
-        default: "mirza_scan_results"
-    out:
-      [ output ]
-
-  filter_duplicates_from_scan:
-    run: tools/filter_duplicates_from_scan.cwl
-    in:
-      coords: concatenate_mirza/output
-    out:
-      [ output ]
-
-  split_mirza_results:
-    run: tools/split_mirza_results.cwl
-    in:
-      file: filter_duplicates_from_scan/output
+      motifs: prepare_mirnas/output
+      seqs: input_mrna
+      split_by: settings_split_by
+      index_after_split: settings_index_after_split
     out:
       [ output ]
 
@@ -98,7 +50,7 @@ steps:
     in:
       seq: input_mrna
       motifs: input_mirna
-      coords: split_mirza_results/output
+      coords: split/output
       tree: input_tree
       msa: input_multiple_alignments
     out:
@@ -109,7 +61,7 @@ steps:
     scatter: coords
     in:
       seq: input_mrna
-      coords: split_mirza_results/output
+      coords: split/output
     out:
       [ output ]
 
@@ -118,7 +70,7 @@ steps:
     scatter: coords
     in:
       seq: input_mrna
-      coords: split_mirza_results/output
+      coords: split/output
     out:
       [ output ]
 
@@ -127,7 +79,7 @@ steps:
     scatter: coords
     in:
       seq: input_mrna
-      coords: split_mirza_results/output
+      coords: split/output
     out:
       [ output ]
 
@@ -136,7 +88,7 @@ steps:
     scatter: [ coords, mirza, contrafold, flanks, distance ]
     scatterMethod: dotproduct
     in:
-      coords: split_mirza_results/output
+      coords: split/output
       mirza: calculate_mirza/output
       contrafold: calculate_contrafold/output
       flanks: calculate_flanks/output

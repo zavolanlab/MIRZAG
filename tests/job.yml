@@ -22,7 +22,7 @@ input_model_without_bls:
   class: File
   path: '../data/glm-without-bls.bin'
 
-output_file_name: 'mirza_g_results_scan.tsv.gz'
+output_file_name: 'mirza_g_results.tsv.gz'
 
 settings_split_by: '|'
 settings_index_after_split: 1
