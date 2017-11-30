@@ -18,6 +18,9 @@ inputs:
   output_file_name: string
   settings_split_by: string
   settings_index_after_split: int
+  settings_mirza_threshold: float
+  settings_contextLen_L: int
+  settings_contextLen_U: int
 
 outputs:
 
@@ -59,5 +62,8 @@ steps:
       output_file_name: output_file_name
       settings_split_by: settings_split_by
       settings_index_after_split: settings_index_after_split
+      settings_mirza_threshold: settings_mirza_threshold
+      settings_contextLen_L: settings_contextLen_L
+      settings_contextLen_U: settings_contextLen_U
     out:
       [ output ]

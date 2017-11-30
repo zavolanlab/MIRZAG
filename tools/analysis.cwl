@@ -18,6 +18,9 @@ inputs:
   output_file_name: string
   settings_split_by: string
   settings_index_after_split: int
+  settings_mirza_threshold: float
+  settings_contextLen_L: int
+  settings_contextLen_U: int
 
 outputs:
 
@@ -36,6 +39,7 @@ steps:
       coords: input_coords
       tree: input_tree
       msa: input_multiple_alignments
+      threshold: settings_mirza_threshold
     out:
       [ output ]
 
@@ -45,6 +49,7 @@ steps:
     in:
       seq: input_mrna
       coords: input_coords
+      contextLen_L: settings_contextLen_L
     out:
       [ output ]
 

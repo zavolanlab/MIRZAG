@@ -7,8 +7,8 @@ baseCommand: rg_calculate_MIRZA.py
 
 doc: |
 
-  Calculate MIRZA interaction energy and MIRZA-based Branch Length Score (conservation) for the provided
-  coordinates of putative targets.
+  Calculate MIRZA interaction energy and MIRZA-based Branch Length Score
+  (conservation) for the provided coordinates of putative targets.
 
 arguments: ['-o', $(inputs.coords.basename).mirza]
 
@@ -55,7 +55,7 @@ inputs:
     inputBinding:
       prefix: --onlyMIRZA
 
-  thr:
+  threshold:
     type: ["null", float]
     default: 20.0
     doc: Threshold for MIRZA score
