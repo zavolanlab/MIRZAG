@@ -18,3 +18,4 @@ snowballstemmer==1.2.1
 Sphinx==1.4.4
 sphinx-argparse==0.1.15
 sphinx-rtd-theme==0.1.9
+Jobber==0.1.4
