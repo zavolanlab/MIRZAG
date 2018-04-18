@@ -127,6 +127,13 @@ Install python modules:
  * dendropy
  * numpy
  * scipy
+ * Jinja2
+
+The easiest way is to use requirements.txt file:
+
+.. code:: console
+
+  pip install -r requirements.txt
 
 
 Download
