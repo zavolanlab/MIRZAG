@@ -2,27 +2,27 @@
 
 input_mirna:
   class: File
-  path: "mirnas.fa"
+  path: "../mirnas.fa"
 
 input_mrna:
   class: File
-  path: "utrs.fa"
+  path: "../utrs.fa"
 
 input_tree:
   class: File
-  path: "../data/hg19_tree.nh"
+  path: "../../data/hg19_tree.nh"
 
 input_multiple_alignments:
   class: File
-  path: "../data/HumanAlignments.tar.gz"
+  path: "../../data/HumanAlignments.tar.gz"
 
 input_model_with_bls:
   class: File
-  path: "../data/glm-with-bls.bin"
+  path: "../../data/glm-with-bls.bin"
 
 input_model_without_bls:
   class: File
-  path: '../data/glm-without-bls.bin'
+  path: '../../data/glm-without-bls.bin'
 
 # Output
 

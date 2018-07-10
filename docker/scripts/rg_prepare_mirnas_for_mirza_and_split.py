@@ -18,6 +18,7 @@ import time
 from Bio import SeqIO
 from argparse import ArgumentParser, RawTextHelpFormatter
 
+
 parser = ArgumentParser(description=__doc__, formatter_class=RawTextHelpFormatter)
 parser.add_argument("-v",
                     "--verbose",
@@ -29,10 +30,10 @@ parser.add_argument("--input",
                     dest="input",
                     required=True,
                     help="Input miRNA file in fasta format.")
-# parser.add_argument("--output-dir",
-#                     dest="output_dir",
-#                     default="Output",
-#                     help="Directory for split files, defaults to Output")
+parser.add_argument("--output-dir",
+                    dest="output_dir",
+                    default="",
+                    help="Directory for split files, defaults to Output")
 
 
 # redefine a functions for writing to stdout and stderr to save some writting
@@ -48,9 +49,10 @@ def main(options):
                 syserr("mi/siRNA %s is shorter than 21 nucleotides. " % (rec.id) + \
                         "It will be removed from the list.\n")
             else:
-                with open(str(rec.id) + ".mirna.fa", 'w') as outfile:
+                with open(os.path.join(options.output_dir, str(rec.id) + ".mirna.fa"), 'w') as outfile:
                     outfile.write(">%s\n%s\n" % (rec.id,
                                                  str(rec.seq)[:21].upper().replace("U", "T")))
+
 
 if __name__ == '__main__':
     try:
