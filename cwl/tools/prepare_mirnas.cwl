@@ -5,6 +5,10 @@ cwlVersion: v1.0
 class: CommandLineTool
 baseCommand: rg_prepare_mirnas_for_mirza_and_split.py
 
+hints:
+  DockerRequirement:
+    dockerPull: localhost:5000/zavolanlab/mirzag-scripts:1
+
 doc: |
 
   Prepare miRNA fasta file for MIRZA i.e. for each miRNA sequence

@@ -18,6 +18,7 @@ import gzip
 import dendropy
 import itertools
 import tarfile
+import tempfile
 import traceback
 import subprocess
 import cPickle as cpickle
@@ -209,12 +210,11 @@ def main(options):
                                                                      # "canonical" if canonical else "non-canonical",
                                                                      # type_of_site)
                     outfile.write(outtext)
-    clean()
-
+    # clean()
 
 
 def calculate_mirza(mRNAseqs, mRNAids, miRNAseq, miRNAid, update='noupdate',
-        context_len=50):
+                    context_len=50):
     """Get the mirza results
 
     Args:
@@ -232,17 +232,9 @@ def calculate_mirza(mRNAseqs, mRNAids, miRNAseq, miRNAid, update='noupdate',
     MIRZAbin = options.mirzabin
     assert len(mRNAseqs) == len(mRNAids)
 
-    try:
-        mrnainput = open(options.coords + 'mirza_mrna_input' + '.fa', 'w')
-        mirnainput = open(options.coords + 'mirza_mirna_input' + '.fa', 'w')
-        expressions = open(options.coords + 'mirza_mirna_expressions' + '.fa', 'w')
-    except IOError:
-        raise('Cannot write files for MIRZA input')
-
-    # get the paths for the files
-    mrna_path = os.path.abspath(mrnainput.name)
-    mirna_path = os.path.abspath(mirnainput.name)
-    expr_path = os.path.abspath(expressions.name)
+    mrnainput = tempfile.NamedTemporaryFile()
+    mirnainput = tempfile.NamedTemporaryFile()
+    expressions = tempfile.NamedTemporaryFile()
 
     #
     # write sequences to files
@@ -255,19 +247,22 @@ def calculate_mirza(mRNAseqs, mRNAids, miRNAseq, miRNAid, update='noupdate',
             mrnainput.write('>%s\n%s\n' % (key, value))
         mirnainput.write('>%s\n%s\n' % (miRNAid.replace('-', ''), miRNAseq))
         expressions.write('%s\t1' % (miRNAid))
-        mrnainput.close()
-        mirnainput.close()
-        expressions.close()
+        mrnainput.seek(0)
+        mirnainput.seek(0)
+        expressions.seek(0)
     except IOError:
         raise IOError('Cannot write into the MIRZA input files')
     #
     # Run MIRZA with these files
     #
-    mirza_command = MIRZAbin + ' ' + expr_path + ' ' + mrna_path + ' ' + mirna_path + ' '\
-        + str(len(mRNAseqs[0])) + ' ' + update
-    mirzarun = subprocess.Popen(mirza_command, shell=True,
-                                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    mirza_command = [MIRZAbin, expressions.name, mrnainput.name,
+                     mirnainput.name, str(len(mRNAseqs[0])), update]
+    mirzarun = subprocess.Popen(mirza_command, stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE)
     stdout, stderr = mirzarun.communicate()
+    mrnainput.close()
+    mirnainput.close()
+    expressions.close()
     return stdout
 
 
@@ -753,17 +748,6 @@ def make_homologues_mirnas(phylogenetic_tree, mirna_seqs):
     return mirhomologues
 
 
-def clean():
-    """Remove files after calculation
-    """
-    try:
-        os.unlink(options.coords + 'mirza_mrna_input' + '.fa')
-        os.unlink(options.coords + 'mirza_mirna_input' + '.fa')
-        os.unlink(options.coords + 'mirza_mirna_expressions' + '.fa')
-    except:
-        pass
-
-
 def is_executable(program):
     """
     Check if the path/binary provided is valid executable
@@ -783,6 +767,7 @@ def is_executable(program):
                 return True
 
     return False
+
 
 if __name__ == '__main__':
     try:

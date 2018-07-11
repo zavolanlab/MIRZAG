@@ -5,6 +5,10 @@ cwlVersion: v1.0
 class: CommandLineTool
 baseCommand: rg_filter_duplicates_from_scan.py
 
+hints:
+  DockerRequirement:
+    dockerPull: localhost:5000/zavolanlab/mirzag-scripts:1
+
 doc: |
 
   Filter duplicates in coordinates by id, miRNA and sequence

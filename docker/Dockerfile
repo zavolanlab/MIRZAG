@@ -18,6 +18,32 @@ LABEL maintainer.lab="Zavolan Lab"
 LABEL maintainer.license="SPDX:GPL-3.0"
 
 ##### INSTALL #####
+COPY MIRZA/ /tmp/mirza/
+
+RUN apt-get update && \
+  apt-get install --yes \
+    make \
+    g++ \
+    wget && \
+  cd /tmp/mirza/ && \
+  make && \
+  mv MIRZA /usr/bin/ && \
+  rm -rf /tmp/mirza && \
+  cd /tmp && \
+  wget http://contra.stanford.edu/contrafold/contrafold_v2_02.tar.gz && \
+  tar xzf contrafold_*.tar.gz && \
+  cd /tmp/contrafold/src && \
+  sed -i '/^CXXFLAGS = / s/$/ -fpermissive/' Makefile && \
+  sed -i '/#include <vector>/a #include <limits.h>' Utilities.hpp && \
+  make && \
+  mv contrafold /usr/bin/ && \
+  rm -rf /tmp/contrafold* && \
+  apt-get remove --purge --yes \
+    make \
+    g++ \
+    wget && \
+  apt-get autoremove --purge --yes
+
 COPY requirements.txt /tmp/
 RUN pip install --no-cache-dir -r /tmp/requirements.txt
 COPY scripts/*.py /usr/bin/

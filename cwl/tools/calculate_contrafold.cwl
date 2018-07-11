@@ -5,6 +5,10 @@ cwlVersion: v1.0
 class: CommandLineTool
 baseCommand: rg_calculate_contrafold.py
 
+hints:
+  DockerRequirement:
+    dockerPull: localhost:5000/zavolanlab/mirzag-scripts:1
+
 doc: |
 
   The `CONTRAfold <http://contra.stanford.edu/contrafold/>`_ algorithm is used

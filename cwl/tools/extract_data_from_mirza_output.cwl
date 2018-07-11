@@ -5,6 +5,10 @@ cwlVersion: v1.0
 class: CommandLineTool
 baseCommand: rg_extract_data_from_mirza_output.py
 
+hints:
+  DockerRequirement:
+    dockerPull: localhost:5000/zavolanlab/mirzag-scripts:1
+
 doc: |
 
   Take MIRZA output and arrange it in a proper way

@@ -5,6 +5,10 @@ cwlVersion: v1.0
 class: CommandLineTool
 baseCommand: rg_merge_results_add_probability_and_calculate_per_gene_score.py
 
+hints:
+  DockerRequirement:
+    dockerPull: localhost:5000/zavolanlab/mirzag-scripts:1
+
 doc: |
 
   Merge all results into one features table
@@ -61,7 +65,7 @@ inputs:
     - type: enum
       symbols: ['yes', 'no']
     default: no
-    doc: Calculate only MIRZA and DON'T calculate MIRZA BLS
+    doc: "Calculate only MIRZA and DON'T calculate MIRZA BLS"
     inputBinding:
       prefix: --only-mirza
 

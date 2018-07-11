@@ -16,6 +16,7 @@ import gzip
 import shutil
 import optparse
 import subprocess
+import tempfile
 from Bio import SeqIO
 from itertools import izip
 from argparse import ArgumentParser, RawTextHelpFormatter
@@ -122,8 +123,7 @@ def main(options):
     corlen = len(coords)
 
     # make a directory to store the files
-    dirpath = os.path.splitext(os.path.abspath(options.coords))[0]
-    os.mkdir(dirpath)
+    dirpath = tempfile.mkdtemp()
     bad_coords = []
     mirnas_dict = {}
     for (mrnaid, lowerix, upperix, mirnas) in coords:

@@ -6,14 +6,14 @@ cwlVersion: v1.0
 
 class: CommandLineTool
 baseCommand: ruby
-# hints:
-#   SoftwareRequirement:
-#     packages:
-#     - package: 'Ruby'
-#       version:
-#       - '2.3.3'
-#   DockerRequirement:
-#     dockerPull: ruby:2.4.2-slim
+hints:
+  SoftwareRequirement:
+    packages:
+    - package: 'Ruby'
+      version:
+      - '2.3.3'
+  DockerRequirement:
+    dockerPull: ruby:2.4.2-slim
 
 stdout: $(inputs.output_name)
 

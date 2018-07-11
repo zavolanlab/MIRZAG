@@ -5,6 +5,10 @@ cwlVersion: v1.0
 class: CommandLineTool
 baseCommand: rg_count_miRNA_seeds_and_filter_duplicates.py
 
+hints:
+  DockerRequirement:
+    dockerPull: localhost:5000/zavolanlab/mirzag-scripts:1
+
 doc: |
 
   Count miRNA seed in the provided sequences according to chosen definition
@@ -21,7 +25,7 @@ inputs:
 
   seqs:
     type: File
-    doc: Sequences for scaning eg. 3' UTRs
+    doc: "Sequences for scaning eg. 3' UTRs"
     inputBinding:
       prefix: --seqs
 
