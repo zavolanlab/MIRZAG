@@ -27,10 +27,10 @@ parser.add_argument("--input",
                     dest="input",
                     default=sys.stdin,
                     help="Input file in fasta format. Defaults to sys.stdin.")
-# parser.add_argument("--output-dir",
-#                     dest="output_dir",
-#                     required=True,
-#                     help="Output directory for split files")
+parser.add_argument("--output-dir",
+                    dest="output_dir",
+                    default="",
+                    help="Output directory for split files")
 parser.add_argument("--part-size",
                     dest="part_size",
                     type=int,
@@ -70,7 +70,7 @@ def main(options):
                         if outfile is not None:
                             outfile.close()
                         files_count += 1
-                        outfile = open("part_%i.mrna.fa" % files_count, 'w')
+                        outfile = open(os.path.join(options.output_dir, "part_%i.mrna.fa" % files_count), 'w')
                     if len(part_mrna) == options.window_size:
                         outfile.write(">%s:%s\n%s\n" % (str(rec.id), winpos, part_mrna))
                         size_count += 1

@@ -51,6 +51,12 @@ inputs:
     inputBinding:
       prefix: --verbose
 
+  output_dir:
+    type: string
+    default: ""
+    inputBinding:
+      prefix: --output-dir
+
 outputs:
   output:
     type: File[]
