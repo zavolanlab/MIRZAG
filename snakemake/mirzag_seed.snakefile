@@ -4,7 +4,7 @@ rule count_miRNA_seeds_and_filter_duplicates:
     output:
         'results/coords/{part}.seedcount'
     singularity:
-        'docker://localhost:5000/zavolanlab/mirzag-scripts:1'
+        'docker://zavolab/mirzag-scripts:1'
     shell:
         'rg_count_miRNA_seeds_and_filter_duplicates.py --motifs {input} '
         '--seqs {config[input_mrna]} --split-by {config[settings_split_by]} '

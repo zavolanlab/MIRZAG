@@ -7,7 +7,7 @@ baseCommand: MIRZA
 
 hints:
   DockerRequirement:
-    dockerPull: localhost:5000/zavolanlab/mirza:1
+    dockerPull: zavolab/mirza:1
 
 stdout: $(inputs.mirna.basename)_$(inputs.mrna.basename).mirza
 

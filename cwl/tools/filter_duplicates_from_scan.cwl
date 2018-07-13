@@ -7,7 +7,7 @@ baseCommand: rg_filter_duplicates_from_scan.py
 
 hints:
   DockerRequirement:
-    dockerPull: localhost:5000/zavolanlab/mirzag-scripts:1
+    dockerPull: zavolab/mirzag-scripts:1
 
 doc: |
 

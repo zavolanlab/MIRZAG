@@ -6,7 +6,7 @@ rule generate_mrna_chunks:
     output:
         'results/part_1.mrna.fa'
     singularity:
-        'docker://localhost:5000/zavolanlab/mirzag-scripts:1'
+        'docker:/zavolab/mirzag-scripts:1'
     shell:
         'rg_generate_utr_chunks.py --input {input} '
         '--output-dir results --part-size 90000000000'
@@ -30,7 +30,7 @@ rule mirza:
     output:
         'results/mirza_scan/{part}.mirza'
     singularity:
-        'docker://localhost:5000/zavolanlab/mirza:1'
+        'docker://zavolab/mirza:1'
     shell:
         'MIRZA {input} 50 noupdate > {output}'
 
@@ -41,7 +41,7 @@ rule mirza_parser:
     output:
         'results/mirza_scan_parsed/{part}.tsv',
     singularity:
-        'docker://localhost:5000/zavolanlab/mirzag-scripts:1'
+        'docker://zavolab/mirzag-scripts:1'
     shell:
         'rg_extract_data_from_mirza_output.py --input {input.mirza} '
         '--seqs {input.seqs} --threshold 50 --context 50 '
@@ -61,7 +61,7 @@ rule filter_duplicates_from_scan:
     output:
         'results/mirza_scan_results.filtered.tsv'
     singularity:
-        'docker://localhost:5000/zavolanlab/mirzag-scripts:1'
+        'docker://zavolab/mirzag-scripts:1'
     shell:
         'rg_filter_duplicates_from_scan.py --coords {input} '
         '--split-by NONE --index-after-split 0 > {output}'

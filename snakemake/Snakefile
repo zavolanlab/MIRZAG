@@ -13,7 +13,7 @@ rule split_mirnas:
     output:
         dynamic('results/split_mirnas/{part}.mirna.fa')
     singularity:
-        'docker://localhost:5000/zavolanlab/mirzag-scripts:1'
+        'docker://zavolab/mirzag-scripts:1'
     shell:
         'rg_prepare_mirnas_for_mirza_and_split.py --input {config[input_mirna]} '
         '--output-dir results/split_mirnas/'
@@ -24,7 +24,7 @@ rule calculate_mirza:
     output:
         'results/mirza/{part}.mirza'
     singularity:
-        'docker://localhost:5000/zavolanlab/mirzag-scripts:1'
+        'docker://zavolab/mirzag-scripts:1'
     shell:
         'rg_calculate_MIRZA.py '
         '--seq {config[input_mrna]} '
@@ -42,7 +42,7 @@ rule calculate_contrafold:
     output:
         'results/contrafold/{part}.contrafold'
     singularity:
-        'docker://localhost:5000/zavolanlab/mirzag-scripts:1'
+        'docker://zavolab/mirzag-scripts:1'
     shell:
         'rg_calculate_contrafold.py '
         '--seq {config[input_mrna]} '
@@ -56,7 +56,7 @@ rule calculate_flanks:
     output:
         'results/flanks/{part}.flanks'
     singularity:
-        'docker://localhost:5000/zavolanlab/mirzag-scripts:1'
+        'docker://zavolab/mirzag-scripts:1'
     shell:
         'rg_calculate_flanks_composition.py '
         '--seq {config[input_mrna]} '
@@ -69,7 +69,7 @@ rule calculate_distance:
     output:
         'results/distance/{part}.distance'
     singularity:
-        'docker://localhost:5000/zavolanlab/mirzag-scripts:1'
+        'docker://zavolab/mirzag-scripts:1'
     shell:
         'rg_calculate_distance.py '
         '--seq {config[input_mrna]} '
@@ -87,7 +87,7 @@ rule merge_results_add_probability_and_calculate_per_gene_score:
     output:
         'results/score/{part}.score'
     singularity:
-        'docker://localhost:5000/zavolanlab/mirzag-scripts:1'
+        'docker://zavolab/mirzag-scripts:1'
     shell:
         'rg_merge_results_add_probability_and_calculate_per_gene_score.py '
         '--coords {input.coords} '

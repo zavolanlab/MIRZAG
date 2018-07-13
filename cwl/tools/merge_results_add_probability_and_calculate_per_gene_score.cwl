@@ -7,7 +7,7 @@ baseCommand: rg_merge_results_add_probability_and_calculate_per_gene_score.py
 
 hints:
   DockerRequirement:
-    dockerPull: localhost:5000/zavolanlab/mirzag-scripts:1
+    dockerPull: zavolab/mirzag-scripts:1
 
 doc: |
 
