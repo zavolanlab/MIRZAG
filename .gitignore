@@ -1,16 +1,1 @@
-# Ignore everything
-*
-/CDS_alignments/
-
-# But not these files...
-!*/
-!*.py
-!.gitignore
-!*.py
-!*.sh
-!*.ini
-!*.rst
-!*.html
-!*.nh
-!/docs/_build/html/
-!requirements.txt
+venv*

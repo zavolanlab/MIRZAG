@@ -1,0 +1,111 @@
+if config['method'] == 'seed':
+    include: 'mirzag_seed.snakefile'
+elif config['method'] == 'scan':
+    include: 'mirzag_scan.snakefile'
+else:
+    raise RuntimeError('Unknown method: {}'.format(config['method']))
+
+rule all:
+    input:
+        config['output_file_name']
+
+rule split_mirnas:
+    output:
+        dynamic('results/split_mirnas/{part}.mirna.fa')
+    singularity:
+        'docker://zavolab/mirzag-scripts:1'
+    shell:
+        'rg_prepare_mirnas_for_mirza_and_split.py --input {config[input_mirna]} '
+        '--output-dir results/split_mirnas/'
+
+rule calculate_mirza:
+    input:
+        'results/coords/{part}.seedcount'
+    output:
+        'results/mirza/{part}.mirza'
+    singularity:
+        'docker://zavolab/mirzag-scripts:1'
+    shell:
+        'rg_calculate_MIRZA.py '
+        '--seq {config[input_mrna]} '
+        '--motifs {config[input_mirna]} '
+        '--coords {input} '
+        '--tree {config[input_tree]} '
+        '--msa {config[input_multiple_alignments]} '
+        '--threshold {config[settings_mirza_threshold]} '
+        '--mirzabin MIRZA '
+        '--out {output}'
+
+rule calculate_contrafold:
+    input:
+        'results/coords/{part}.seedcount'
+    output:
+        'results/contrafold/{part}.contrafold'
+    singularity:
+        'docker://zavolab/mirzag-scripts:1'
+    shell:
+        'rg_calculate_contrafold.py '
+        '--seq {config[input_mrna]} '
+        '--coords {input} '
+        '--contextLen_L {config[settings_contextLen_L]} '
+        '--out {output}'
+
+rule calculate_flanks:
+    input:
+        'results/coords/{part}.seedcount'
+    output:
+        'results/flanks/{part}.flanks'
+    singularity:
+        'docker://zavolab/mirzag-scripts:1'
+    shell:
+        'rg_calculate_flanks_composition.py '
+        '--seq {config[input_mrna]} '
+        '--coords {input} '
+        '--out {output}'
+
+rule calculate_distance:
+    input:
+        'results/coords/{part}.seedcount'
+    output:
+        'results/distance/{part}.distance'
+    singularity:
+        'docker://zavolab/mirzag-scripts:1'
+    shell:
+        'rg_calculate_distance.py '
+        '--seq {config[input_mrna]} '
+        '--coords {input} '
+        '--out {output}'
+
+
+rule merge_results_add_probability_and_calculate_per_gene_score:
+    input:
+        coords = 'results/coords/{part}.seedcount',
+        mirza = 'results/mirza/{part}.mirza',
+        contrafold = 'results/contrafold/{part}.contrafold',
+        flanks = 'results/flanks/{part}.flanks',
+        distance = 'results/distance/{part}.distance'
+    output:
+        'results/score/{part}.score'
+    singularity:
+        'docker://zavolab/mirzag-scripts:1'
+    shell:
+        'rg_merge_results_add_probability_and_calculate_per_gene_score.py '
+        '--coords {input.coords} '
+        '--mirza {input.mirza} '
+        '--contrafold {input.contrafold} '
+        '--flanks {input.flanks} '
+        '--distance {input.distance} '
+        '--model-bls {config[input_model_with_bls]} '
+        '--model-nobls {config[input_model_without_bls]} '
+        '--split-by {config[settings_split_by]} '
+        '--column {config[settings_index_after_split]} '
+        '--only-mirza no '
+        '--output {output}'
+
+rule concatenated_scores:
+    input:
+        dynamic('results/score/{part}.score')
+    output:
+        config['output_file_name']
+    shell:
+        'cat {input} > {output}'

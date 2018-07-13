@@ -1,0 +1,38 @@
+# Inputs
+
+input_mirna:
+  class: File
+  path: "../mirnas.fa"
+
+input_mrna:
+  class: File
+  path: "../utrs.fa"
+
+input_tree:
+  class: File
+  path: "../../data/hg19_tree.nh"
+
+input_multiple_alignments:
+  class: File
+  path: "../../data/HumanAlignments.tar.gz"
+
+input_model_with_bls:
+  class: File
+  path: "../../data/glm-with-bls.bin"
+
+input_model_without_bls:
+  class: File
+  path: '../../data/glm-without-bls.bin'
+
+# Output
+
+output_file_name: 'mirza_g_results.tsv.gz'
+
+# Settings
+
+settings_split_by: '|'
+settings_index_after_split: 1
+settings_mirza_threshold: 50
+settings_contextLen_L: 14 # downstream up to the end of the miRNA (This is
+# from the miRNA in the 5'end. In the mRNA this will be upstream region)
+settings_contextLen_U: 0 # stay with the seed
