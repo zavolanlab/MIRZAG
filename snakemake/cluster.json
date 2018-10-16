@@ -1,0 +1,23 @@
+{
+"__default__":
+{
+"queue":"6hours",
+"time": "01:00:00",
+"threads":"1",
+"mem":"8G"
+},
+"calculate_mirza":
+{
+"queue":"6hours",
+"time": "06:00:00",
+"threads":"1",
+"mem":"10G"
+},
+"calculate_contrafold":
+{
+"queue":"6hours",
+"time": "03:00:00",
+"threads":"1",
+"mem":"10G"
+}
+}

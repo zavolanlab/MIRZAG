@@ -6,7 +6,7 @@ rule generate_mrna_chunks:
     output:
         'results/part_1.mrna.fa'
     singularity:
-        'docker:/zavolab/mirzag-scripts:1'
+        'docker://zavolab/mirzag-scripts:1'
     shell:
         'rg_generate_utr_chunks.py --input {input} '
         '--output-dir results --part-size 90000000000'

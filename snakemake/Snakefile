@@ -12,69 +12,91 @@ rule all:
 rule split_mirnas:
     output:
         dynamic('results/split_mirnas/{part}.mirna.fa')
+    params:
+        cluster_log = "results/cluster_log/split_mirnas.log"
     singularity:
         'docker://zavolab/mirzag-scripts:1'
+    log:
+        "results/local_log/split_mirnas.log"
     shell:
-        'rg_prepare_mirnas_for_mirza_and_split.py --input {config[input_mirna]} '
-        '--output-dir results/split_mirnas/'
+        "(rg_prepare_mirnas_for_mirza_and_split.py --input {config[input_mirna]} \
+        --output-dir results/split_mirnas/) &> {log}"
 
 rule calculate_mirza:
     input:
         'results/coords/{part}.seedcount'
     output:
         'results/mirza/{part}.mirza'
+    params:
+        cluster_log = "results/cluster_log/calculate_mirza_{part}.log",
+        organism = config["organism"]
     singularity:
         'docker://zavolab/mirzag-scripts:1'
+    log:
+        "results/local_log/calculate_mirza_{part}.log"
     shell:
-        'rg_calculate_MIRZA.py '
-        '--seq {config[input_mrna]} '
-        '--motifs {config[input_mirna]} '
-        '--coords {input} '
-        '--tree {config[input_tree]} '
-        '--msa {config[input_multiple_alignments]} '
-        '--threshold {config[settings_mirza_threshold]} '
-        '--mirzabin MIRZA '
-        '--out {output}'
+        "(../../docker/scripts/rg_calculate_MIRZA.py \
+        --seq {config[input_mrna]} \
+        --motifs {config[input_mirna]} \
+        --coords {input} \
+        --tree {config[input_tree]} \
+        --msa {config[input_multiple_alignments]} \
+        --threshold {config[settings_mirza_threshold]} \
+        --mirzabin MIRZA \
+        --reforg {params.organism} \
+        --out {output}) &> {log}"
 
 rule calculate_contrafold:
     input:
         'results/coords/{part}.seedcount'
     output:
         'results/contrafold/{part}.contrafold'
+    params:
+        cluster_log = "results/cluster_log/calculate_contrafold_{part}.log"
     singularity:
         'docker://zavolab/mirzag-scripts:1'
+    log:
+        "results/local_log/calculate_contrafold_{part}.log"
     shell:
-        'rg_calculate_contrafold.py '
-        '--seq {config[input_mrna]} '
-        '--coords {input} '
-        '--contextLen_L {config[settings_contextLen_L]} '
-        '--out {output}'
+        "(rg_calculate_contrafold.py \
+        --seq {config[input_mrna]} \
+        --coords {input} \
+        --contextLen_L {config[settings_contextLen_L]} \
+        --out {output}) &> {log}"
 
 rule calculate_flanks:
     input:
         'results/coords/{part}.seedcount'
     output:
         'results/flanks/{part}.flanks'
+    params:
+        cluster_log = "results/cluster_log/calculate_flanks_{part}.log"
     singularity:
         'docker://zavolab/mirzag-scripts:1'
+    log:
+        "results/local_log/calculate_flanks_{part}.log"
     shell:
-        'rg_calculate_flanks_composition.py '
-        '--seq {config[input_mrna]} '
-        '--coords {input} '
-        '--out {output}'
+        "(rg_calculate_flanks_composition.py \
+        --seq {config[input_mrna]} \
+        --coords {input} \
+        --out {output}) &> {log}"
 
 rule calculate_distance:
     input:
         'results/coords/{part}.seedcount'
     output:
         'results/distance/{part}.distance'
+    params:
+        cluster_log = "results/cluster_log/calculate_distance_{part}.log"
     singularity:
         'docker://zavolab/mirzag-scripts:1'
+    log:
+        "results/local_log/calculate_distance_{part}.log"
     shell:
-        'rg_calculate_distance.py '
-        '--seq {config[input_mrna]} '
-        '--coords {input} '
-        '--out {output}'
+        "(rg_calculate_distance.py \
+        --seq {config[input_mrna]} \
+        --coords {input} \
+        --out {output}) &> {log}"
 
 
 rule merge_results_add_probability_and_calculate_per_gene_score:
@@ -86,26 +108,32 @@ rule merge_results_add_probability_and_calculate_per_gene_score:
         distance = 'results/distance/{part}.distance'
     output:
         'results/score/{part}.score'
+    params:
+        cluster_log = "results/cluster_log/merge_results_add_probability_and_calculate_per_gene_score_{part}.log"
     singularity:
         'docker://zavolab/mirzag-scripts:1'
+    log:
+        "results/local_log/merge_results_add_probability_and_calculate_per_gene_score_{part}.log"
     shell:
-        'rg_merge_results_add_probability_and_calculate_per_gene_score.py '
-        '--coords {input.coords} '
-        '--mirza {input.mirza} '
-        '--contrafold {input.contrafold} '
-        '--flanks {input.flanks} '
-        '--distance {input.distance} '
-        '--model-bls {config[input_model_with_bls]} '
-        '--model-nobls {config[input_model_without_bls]} '
-        '--split-by {config[settings_split_by]} '
-        '--column {config[settings_index_after_split]} '
-        '--only-mirza no '
-        '--output {output}'
+        "(rg_merge_results_add_probability_and_calculate_per_gene_score.py \
+        --coords {input.coords} \
+        --mirza {input.mirza} \
+        --contrafold {input.contrafold} \
+        --flanks {input.flanks} \
+        --distance {input.distance} \
+        --model-bls {config[input_model_with_bls]} \
+        --model-nobls {config[input_model_without_bls]} \
+        --split-by {config[settings_split_by]} \
+        --column {config[settings_index_after_split]} \
+        --only-mirza no \
+        --output {output}) &> {log}"
 
 rule concatenated_scores:
     input:
         dynamic('results/score/{part}.score')
     output:
         config['output_file_name']
+    log:
+        "results/local_log/concatenated_scores.log"
     shell:
-        'cat {input} > {output}'
+        '(cat {input} > {output}) &> {log}'

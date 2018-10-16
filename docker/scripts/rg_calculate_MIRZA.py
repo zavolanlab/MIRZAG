@@ -723,7 +723,11 @@ def read_multiple_alignments(archive, coordinates):
     multiple_alignment_dict = {}
     with tarfile.open(archive, 'r:gz') as t:
         for coord in coordinates:
-            f = t.extractfile(coord[0])
+            try:
+                f = t.extractfile(coord[0])
+            except:
+                pass
+            f = t.extractfile("./" + coord[0])
             if f is None:
                 syserr("No alignment for %s, going on without it.\n" % coord[0])
             else:
