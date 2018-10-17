@@ -15,7 +15,7 @@ rule split_mirnas:
     singularity:
         'docker://zavolab/mirzag-scripts:1'
     log:
-        "results/local_log/split_mirnas.log"
+        "logs/local_log/split_mirnas.log"
     shell:
         "(rg_prepare_mirnas_for_mirza_and_split.py --input {config[input_mirna]} \
         --output-dir results/split_mirnas/) &> {log}"
@@ -31,7 +31,7 @@ rule calculate_mirza:
     singularity:
         'docker://zavolab/mirzag-scripts:1'
     log:
-        "results/local_log/calculate_mirza_{part}.log"
+        "logs/local_log/calculate_mirza_{part}.log"
     shell:
         "(python {input.script} \
         --seq {config[input_mrna]} \
@@ -52,7 +52,7 @@ rule calculate_contrafold:
     singularity:
         'docker://zavolab/mirzag-scripts:1'
     log:
-        "results/local_log/calculate_contrafold_{part}.log"
+        "logs/local_log/calculate_contrafold_{part}.log"
     shell:
         "(rg_calculate_contrafold.py \
         --seq {config[input_mrna]} \
@@ -68,7 +68,7 @@ rule calculate_flanks:
     singularity:
         'docker://zavolab/mirzag-scripts:1'
     log:
-        "results/local_log/calculate_flanks_{part}.log"
+        "logs/local_log/calculate_flanks_{part}.log"
     shell:
         "(rg_calculate_flanks_composition.py \
         --seq {config[input_mrna]} \
@@ -83,7 +83,7 @@ rule calculate_distance:
     singularity:
         'docker://zavolab/mirzag-scripts:1'
     log:
-        "results/local_log/calculate_distance_{part}.log"
+        "logs/local_log/calculate_distance_{part}.log"
     shell:
         "(rg_calculate_distance.py \
         --seq {config[input_mrna]} \
@@ -103,7 +103,7 @@ rule merge_results_add_probability_and_calculate_per_gene_score:
     singularity:
         'docker://zavolab/mirzag-scripts:1'
     log:
-        "results/local_log/merge_results_add_probability_and_calculate_per_gene_score_{part}.log"
+        "logs/local_log/merge_results_add_probability_and_calculate_per_gene_score_{part}.log"
     shell:
         "(rg_merge_results_add_probability_and_calculate_per_gene_score.py \
         --coords {input.coords} \
@@ -124,6 +124,6 @@ rule concatenated_scores:
     output:
         config['output_file_name']
     log:
-        "results/local_log/concatenated_scores.log"
+        "logs/local_log/concatenated_scores.log"
     shell:
         '(cat {input} > {output}) &> {log}'
