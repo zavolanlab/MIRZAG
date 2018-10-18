@@ -1,0 +1,5 @@
+mirza_g_results.tsv.gz
+results/
+dag.png
+logs
+.snakemake/

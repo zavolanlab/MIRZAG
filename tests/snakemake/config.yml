@@ -1,19 +1,22 @@
-method: scan  # seed/scan
+method: seed  # seed/scan
 
-input_mirna: data/mirnas.fa
-input_mrna: data/utrs.fa
-input_tree: data/hg19_tree.nh
-input_multiple_alignments: data/HumanAlignments.tar.gz
-input_model_with_bls: data/glm-with-bls.bin
-input_model_without_bls: data/glm-without-bls.bin
+input_mirna: ../mirnas.fa
+input_mrna: ../utrs.fa
+input_tree: ../../data/hg19_tree.nh
+input_multiple_alignments: ../../data/HumanAlignments_with_two_underscore.tar.gz
+input_model_with_bls: ../../data/glm-with-bls.bin
+input_model_without_bls: ../../data/glm-without-bls.bin
+
+scripts: ../../docker/scripts
 
 # Output
 output_file_name: mirza_g_results.tsv.gz
 
 # Settings
-settings_split_by: '"|"'
+settings_split_by: "__"
 settings_index_after_split: 1
 settings_mirza_threshold: 50
 settings_contextLen_L: 14 # downstream up to the end of the miRNA (This is
 # from the miRNA in the 5'end. In the mRNA this will be upstream region)
 settings_contextLen_U: 0 # stay with the seed
+organism: hg19
