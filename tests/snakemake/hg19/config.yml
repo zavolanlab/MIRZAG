@@ -1,13 +1,13 @@
 method: seed  # seed/scan
 
-input_mirna: ../mirnas.fa
-input_mrna: ../utrs.fa
-input_tree: ../../data/hg19_tree.nh
-input_multiple_alignments: ../../data/HumanAlignments_with_two_underscore.tar.gz
-input_model_with_bls: ../../data/glm-with-bls.bin
-input_model_without_bls: ../../data/glm-without-bls.bin
+input_mirna: ../../mirnas.fa
+input_mrna: ../../utrs.fa
+input_tree: ../../../data/hg19_tree.nh
+input_multiple_alignments: ../../../data/HumanAlignments_with_two_underscore.tar.gz
+input_model_with_bls: ../../../data/glm-with-bls.bin
+input_model_without_bls: ../../../data/glm-without-bls.bin
 
-scripts: ../../docker/scripts
+scripts: ../../../docker/scripts
 
 # Output
 output_file_name: mirza_g_results.tsv.gz

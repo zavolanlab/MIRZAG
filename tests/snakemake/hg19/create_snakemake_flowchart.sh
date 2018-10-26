@@ -1,5 +1,5 @@
 snakemake \
 	--dag \
 	-np \
-	-s ../../snakemake/Snakefile \
+	-s ../../../snakemake/Snakefile \
 	--configfile config.yml | dot -Tpng > dag.png
